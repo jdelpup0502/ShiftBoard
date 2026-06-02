@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          Role           @default(EMPLOYEE)
+  jobTitles     EmployeeJob[]
+  shifts        Shift[]        @relation("AssignedShifts")
+  trainingFor   Shift[]        @relation("TraineeShifts")
+  offersMade    ShiftOffer[]   @relation("OfferedBy")
+  offersClaimed ShiftOffer[]   @relation("ClaimedBy")
+  availability  Availability[]
+  createdAt     DateTime       @default(now())
+}
+
+model EmployeeJob {
+  userId   String
+  jobTitle JobTitle
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, jobTitle])
+}
+
+model Shift {
+  id             String      @id @default(cuid())
+  date           DateTime
+  startTime      String
+  endTime        String?
+  jobTitle       JobTitle
+  assignedUserId String?
+  assignedUser   User?       @relation("AssignedShifts", fields: [assignedUserId], references: [id])
+  isTraining     Boolean     @default(false)
+  traineeUserId  String?
+  trainee        User?       @relation("TraineeShifts", fields: [traineeUserId], references: [id])
+  offer          ShiftOffer?
+  createdAt      DateTime    @default(now())
+}
+
+model ShiftOffer {
+  id          String      @id @default(cuid())
+  shiftId     String      @unique
+  shift       Shift       @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  offeredById String
+  offeredBy   User        @relation("OfferedBy", fields: [offeredById], references: [id])
+  claimedById String?
+  claimedBy   User?       @relation("ClaimedBy", fields: [claimedById], references: [id])
+  status      OfferStatus @default(OPEN)
+  createdAt   DateTime    @default(now())
+  claimedAt   DateTime?
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart DateTime
+  dayOfWeek Int
+  available Boolean  @default(true)
+  note      String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStart, dayOfWeek])
+}
+
+model StaffingRequirement {
+  id        String   @id @default(cuid())
+  dayOfWeek Int
+  jobTitle  JobTitle
+  count     Int
+
+  @@unique([dayOfWeek, jobTitle])
+}
+
+enum Role {
+  MANAGER
+  EMPLOYEE
+}
+
+enum JobTitle {
+  SERVER
+  HOST
+  BUSSER
+  BARTENDER
+}
+
+enum OfferStatus {
+  OPEN
+  CLAIMED
+  CANCELLED
+}
