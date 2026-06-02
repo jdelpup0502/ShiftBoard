@@ -23,6 +23,7 @@ const managerLinks = [
   { href: "/manage/staffing", label: "Staffing", icon: ClipboardDocumentListIcon },
   { href: "/manage/employees", label: "Employees", icon: UserGroupIcon },
   { href: "/manage/availability", label: "Availability", icon: CheckCircleIcon },
+  { href: "/manage/audit", label: "Audit Log", icon: ClipboardDocumentListIcon },
 ];
 
 export default function Nav({ user }: { user: User }) {

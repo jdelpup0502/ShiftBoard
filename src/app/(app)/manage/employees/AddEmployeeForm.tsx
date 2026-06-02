@@ -73,7 +73,13 @@ export default function AddEmployeeForm() {
                 <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
                   Temporary Password
                 </label>
-                <input name="password" type="text" required placeholder="Min 6 characters" className={inputClass} />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Min 12 chars, include a number"
+                  className={inputClass}
+                />
                 <p className="text-xs text-gray-400 mt-1">Share this with the employee so they can sign in.</p>
               </div>
 

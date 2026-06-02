@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { login } from "@/app/actions/auth";
 import AuthForm from "../AuthForm";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
@@ -17,12 +16,6 @@ export default function LoginPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
           <AuthForm action={login} submitLabel="Sign in" />
-          <p className="mt-5 text-center text-sm text-gray-500 dark:text-gray-400">
-            No account?{" "}
-            <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Sign up
-            </Link>
-          </p>
         </div>
       </div>
     </div>

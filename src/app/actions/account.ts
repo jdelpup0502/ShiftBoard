@@ -1,16 +1,45 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { getSession } from "@/lib/session";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import {
+  BCRYPT_COST,
+  EmailSchema,
+  NameSchema,
+  PasswordSchema,
+  formatZodError,
+} from "@/lib/validation";
 
-export async function updateProfile(formData: FormData): Promise<{ error?: string; success?: boolean }> {
+const ProfileSchema = z.object({
+  name: NameSchema,
+  email: EmailSchema,
+});
+
+const PasswordChangeSchema = z.object({
+  current: z.string().min(1, "Current password is required.").max(128),
+  next: PasswordSchema,
+  confirm: z.string().min(1, "Please confirm your new password."),
+});
+
+export async function updateProfile(
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
   const user = await requireUser();
-  const name = (formData.get("name") as string).trim();
-  const email = (formData.get("email") as string).trim().toLowerCase();
 
-  if (!name || !email) return { error: "Name and email are required." };
+  const parsed = ProfileSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+  });
+  if (!parsed.success) return { error: formatZodError(parsed.error) };
+
+  const { name, email } = parsed.data;
 
   const conflict = await db.user.findFirst({ where: { email, NOT: { id: user.id } } });
   if (conflict) return { error: "That email is already in use." };
@@ -21,14 +50,26 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   return { success: true };
 }
 
-export async function updatePassword(formData: FormData): Promise<{ error?: string; success?: boolean }> {
+export async function updatePassword(
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
   const user = await requireUser();
-  const current = formData.get("current") as string;
-  const next = formData.get("next") as string;
-  const confirm = formData.get("confirm") as string;
 
-  if (!current || !next || !confirm) return { error: "All fields are required." };
-  if (next.length < 6) return { error: "New password must be at least 6 characters." };
+  const h = await headers();
+  const ip = getClientIp(h.get("x-forwarded-for"));
+  if (!rateLimit(`password:${user.id}:${ip}`, 5, 60 * 60 * 1000)) {
+    return { error: "Too many attempts. Try again later." };
+  }
+
+  const parsed = PasswordChangeSchema.safeParse({
+    current: formData.get("current"),
+    next: formData.get("next"),
+    confirm: formData.get("confirm"),
+  });
+  if (!parsed.success) return { error: formatZodError(parsed.error) };
+
+  const { current, next, confirm } = parsed.data;
+
   if (next !== confirm) return { error: "New passwords don't match." };
 
   const fresh = await db.user.findUnique({ where: { id: user.id } });
@@ -36,7 +77,10 @@ export async function updatePassword(formData: FormData): Promise<{ error?: stri
     return { error: "Current password is incorrect." };
   }
 
-  const passwordHash = await bcrypt.hash(next, 10);
+  const passwordHash = await bcrypt.hash(next, BCRYPT_COST);
   await db.user.update({ where: { id: user.id }, data: { passwordHash } });
-  return { success: true };
+
+  const session = await getSession();
+  await session.destroy();
+  redirect("/login");
 }

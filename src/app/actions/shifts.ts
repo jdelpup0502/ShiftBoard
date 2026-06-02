@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser, requireManager } from "@/lib/auth";
-import { canClaim } from "@/lib/eligibility";
+import { canClaim, hasJobTitle } from "@/lib/eligibility";
+import { writeAuditLog } from "@/lib/audit";
+import { JobTitleSchema, formatZodError } from "@/lib/validation";
 import type { JobTitle } from "@prisma/client";
 
 export async function offerShift(shiftId: string) {
@@ -67,21 +70,62 @@ export async function claimShift(offerId: string) {
   revalidatePath("/marketplace");
 }
 
-export async function createShift(formData: FormData) {
-  await requireManager();
-  const date = new Date(formData.get("date") as string);
+const CreateShiftSchema = z.object({
+  jobTitle: JobTitleSchema,
+});
+
+export async function createShift(formData: FormData): Promise<{ error?: string }> {
+  const manager = await requireManager();
+
+  const jobTitleRaw = formData.get("jobTitle") as string;
+  const parsed = CreateShiftSchema.safeParse({ jobTitle: jobTitleRaw });
+  if (!parsed.success) return { error: formatZodError(parsed.error) };
+
+  const dateStr = formData.get("date") as string;
   const startTime = formData.get("startTime") as string;
-  const endTime = formData.get("endTime") as string;
-  const jobTitle = formData.get("jobTitle") as JobTitle;
+  const endTime = (formData.get("endTime") as string) || null;
   const assignedUserId = (formData.get("assignedUserId") as string) || null;
   const isTraining = formData.get("isTraining") === "true";
   const traineeUserId = isTraining ? ((formData.get("traineeUserId") as string) || null) : null;
 
-  await db.shift.create({
-    data: { date, startTime, endTime, jobTitle, assignedUserId, isTraining, traineeUserId },
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return { error: "Invalid date." };
+  if (!startTime) return { error: "Start time is required." };
+
+  if (assignedUserId) {
+    const qualified = await hasJobTitle(assignedUserId, parsed.data.jobTitle);
+    if (!qualified) return { error: "Assigned user is not trained for this role." };
+  }
+
+  if (traineeUserId) {
+    const traineeUser = await db.user.findUnique({
+      where: { id: traineeUserId },
+      select: { role: true },
+    });
+    if (!traineeUser) return { error: "Trainee user not found." };
+  }
+
+  const shift = await db.shift.create({
+    data: {
+      date,
+      startTime,
+      endTime,
+      jobTitle: parsed.data.jobTitle,
+      assignedUserId,
+      isTraining,
+      traineeUserId,
+    },
   });
+
+  await writeAuditLog(manager.id, "CREATE_SHIFT", "Shift", shift.id, {
+    jobTitle: parsed.data.jobTitle,
+    date: dateStr,
+    assignedUserId: assignedUserId ?? "unassigned",
+  });
+
   revalidatePath("/schedule");
   revalidatePath("/manage/shifts");
+  return {};
 }
 
 export async function addShiftSlot(
@@ -90,17 +134,37 @@ export async function addShiftSlot(
   startTime: string,
   assignedUserId: string | null,
 ): Promise<{ error?: string }> {
-  await requireManager();
+  const manager = await requireManager();
+
+  const parsed = CreateShiftSchema.safeParse({ jobTitle });
+  if (!parsed.success) return { error: formatZodError(parsed.error) };
+
   if (!startTime) return { error: "Start time is required." };
-  await db.shift.create({
+
+  const date = new Date(dateISO);
+  if (isNaN(date.getTime())) return { error: "Invalid date." };
+
+  if (assignedUserId) {
+    const qualified = await hasJobTitle(assignedUserId, parsed.data.jobTitle);
+    if (!qualified) return { error: "Assigned user is not trained for this role." };
+  }
+
+  const shift = await db.shift.create({
     data: {
-      date: new Date(dateISO),
+      date,
       startTime,
       endTime: null,
-      jobTitle,
+      jobTitle: parsed.data.jobTitle,
       assignedUserId,
     },
   });
+
+  await writeAuditLog(manager.id, "CREATE_SHIFT", "Shift", shift.id, {
+    jobTitle: parsed.data.jobTitle,
+    date: dateISO,
+    source: "schedule_grid",
+  });
+
   revalidatePath("/schedule");
   revalidatePath("/dashboard");
   revalidatePath("/marketplace");
@@ -108,15 +172,19 @@ export async function addShiftSlot(
 }
 
 export async function deleteShift(shiftId: string) {
-  await requireManager();
+  const manager = await requireManager();
   await db.shift.delete({ where: { id: shiftId } });
+  await writeAuditLog(manager.id, "DELETE_SHIFT", "Shift", shiftId, {});
   revalidatePath("/schedule");
   revalidatePath("/manage/shifts");
 }
 
 export async function assignShift(shiftId: string, userId: string | null) {
-  await requireManager();
+  const manager = await requireManager();
   await db.shift.update({ where: { id: shiftId }, data: { assignedUserId: userId } });
+  await writeAuditLog(manager.id, "ASSIGN_SHIFT", "Shift", shiftId, {
+    assignedTo: userId ?? "unassigned",
+  });
   revalidatePath("/schedule");
   revalidatePath("/manage/shifts");
 }

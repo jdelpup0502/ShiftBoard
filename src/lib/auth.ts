@@ -3,6 +3,8 @@ import { db } from "./db";
 import { getSession } from "./session";
 import type { User } from "@prisma/client";
 
+export { BCRYPT_COST } from "./validation";
+
 export async function requireUser(): Promise<User> {
   const session = await getSession();
   if (!session.userId) redirect("/login");

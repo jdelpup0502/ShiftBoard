@@ -6,10 +6,9 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 interface Props {
   action: (formData: FormData) => Promise<{ error: string } | undefined>;
   submitLabel: string;
-  showName?: boolean;
 }
 
-export default function AuthForm({ action, submitLabel, showName }: Props) {
+export default function AuthForm({ action, submitLabel }: Props) {
   const [state, formAction, pending] = useActionState(
     async (_prev: { error: string } | null, formData: FormData) => {
       return (await action(formData)) ?? null;
@@ -22,14 +21,6 @@ export default function AuthForm({ action, submitLabel, showName }: Props) {
 
   return (
     <form action={formAction} className="space-y-4">
-      {showName && (
-        <div>
-          <label className="block text-xs font-semibold text-black dark:text-gray-200 uppercase tracking-wide mb-1.5">
-            Name
-          </label>
-          <input name="name" type="text" required placeholder="Your full name" className={inputClass} />
-        </div>
-      )}
       <div>
         <label className="block text-xs font-semibold text-black uppercase tracking-wide mb-1.5">
           Email

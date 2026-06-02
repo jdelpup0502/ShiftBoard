@@ -1,10 +1,28 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireManager } from "@/lib/auth";
+import { writeAuditLog } from "@/lib/audit";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import {
+  BCRYPT_COST,
+  EmailSchema,
+  NameSchema,
+  PasswordSchema,
+  RoleSchema,
+  formatZodError,
+} from "@/lib/validation";
 import type { JobTitle, Role } from "@prisma/client";
+
+const CreateEmployeeSchema = z.object({
+  name: NameSchema,
+  email: EmailSchema,
+  password: PasswordSchema,
+});
 
 export async function updateEmployeeJobs(userId: string, jobTitles: JobTitle[]) {
   await requireManager();
@@ -18,31 +36,82 @@ export async function updateEmployeeJobs(userId: string, jobTitles: JobTitle[]) 
 }
 
 export async function updateRole(userId: string, role: Role) {
-  await requireManager();
-  await db.user.update({ where: { id: userId }, data: { role } });
+  const manager = await requireManager();
+
+  const parsed = RoleSchema.safeParse(role);
+  if (!parsed.success) throw new Error("Invalid role.");
+
+  if (userId === manager.id) throw new Error("You cannot change your own role.");
+
+  if (parsed.data === "EMPLOYEE") {
+    const targetUser = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (targetUser?.role === "MANAGER") {
+      const managerCount = await db.user.count({ where: { role: "MANAGER" } });
+      if (managerCount <= 1) {
+        throw new Error("Cannot demote the last manager.");
+      }
+    }
+  }
+
+  const target = await db.user.update({
+    where: { id: userId },
+    data: { role: parsed.data },
+  });
+
+  await writeAuditLog(manager.id, "UPDATE_ROLE", "User", userId, {
+    email: target.email,
+    newRole: parsed.data,
+  });
+
   revalidatePath("/manage/employees");
 }
 
 export async function createEmployee(formData: FormData): Promise<{ error?: string }> {
-  await requireManager();
-  const name = (formData.get("name") as string).trim();
-  const email = (formData.get("email") as string).trim().toLowerCase();
-  const password = formData.get("password") as string;
+  const manager = await requireManager();
 
-  if (!name || !email || password.length < 6) {
-    return { error: "All fields required; password min 6 characters." };
+  const h = await headers();
+  const ip = getClientIp(h.get("x-forwarded-for"));
+  if (!rateLimit(`create-employee:${manager.id}:${ip}`, 20, 60 * 60 * 1000)) {
+    return { error: "Too many requests. Try again later." };
   }
-  const exists = await db.user.findUnique({ where: { email } });
-  if (exists) return { error: "Email already in use." };
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  await db.user.create({ data: { name, email, passwordHash, role: "EMPLOYEE" } });
+  const parsed = CreateEmployeeSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+  if (!parsed.success) return { error: formatZodError(parsed.error) };
+
+  const { name, email, password } = parsed.data;
+
+  const exists = await db.user.findUnique({ where: { email } });
+  if (exists) return { error: "An account with that email already exists." };
+
+  const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
+  const user = await db.user.create({ data: { name, email, passwordHash, role: "EMPLOYEE" } });
+
+  await writeAuditLog(manager.id, "CREATE_EMPLOYEE", "User", user.id, { email });
+
   revalidatePath("/manage/employees");
   return {};
 }
 
 export async function deleteEmployee(userId: string) {
-  await requireManager();
+  const manager = await requireManager();
+
+  if (userId === manager.id) throw new Error("You cannot delete your own account.");
+
+  const target = await db.user.findUnique({ where: { id: userId }, select: { role: true, email: true } });
+  if (!target) throw new Error("User not found.");
+
+  if (target.role === "MANAGER") {
+    const managerCount = await db.user.count({ where: { role: "MANAGER" } });
+    if (managerCount <= 1) throw new Error("Cannot delete the last manager.");
+  }
+
   await db.user.delete({ where: { id: userId } });
+
+  await writeAuditLog(manager.id, "DELETE_EMPLOYEE", "User", userId, { email: target.email });
+
   revalidatePath("/manage/employees");
 }

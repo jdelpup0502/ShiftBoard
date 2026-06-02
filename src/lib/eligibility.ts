@@ -21,6 +21,13 @@ function timesOverlap(
   return aStart < bEnd && bStart < aEnd;
 }
 
+export async function hasJobTitle(userId: string, jobTitle: JobTitle): Promise<boolean> {
+  const job = await db.employeeJob.findUnique({
+    where: { userId_jobTitle: { userId, jobTitle } },
+  });
+  return job !== null;
+}
+
 export async function canClaim(
   userId: string,
   shift: ShiftLike
@@ -32,10 +39,7 @@ export async function canClaim(
     return { ok: false, reason: "Training shifts cannot be claimed." };
   }
 
-  const jobTitle = await db.employeeJob.findUnique({
-    where: { userId_jobTitle: { userId, jobTitle: shift.jobTitle } },
-  });
-  if (!jobTitle) {
+  if (!(await hasJobTitle(userId, shift.jobTitle))) {
     return { ok: false, reason: "You are not trained for this role." };
   }
 
