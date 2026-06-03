@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { startOfWeek, addDays, format } from "date-fns";
+import { startOfWeek, addDays, format, isSameDay } from "date-fns";
 import type { JobTitle } from "@prisma/client";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
