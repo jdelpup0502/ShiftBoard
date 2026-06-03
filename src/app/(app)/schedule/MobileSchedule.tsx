@@ -22,23 +22,30 @@ const JOB_LABEL: Record<JobTitle, string> = {
   BARTENDER: "Bartender",
 };
 
-const ROLE_BADGE: Record<JobTitle, string> = {
-  SERVER: "bg-blue-600 text-white",
-  HOST: "bg-emerald-600 text-white",
-  BUSSER: "bg-amber-500 text-white",
-  BARTENDER: "bg-purple-600 text-white",
+const ROLE_DOT: Record<JobTitle, string> = {
+  SERVER: "bg-sky-500",
+  HOST: "bg-emerald-500",
+  BUSSER: "bg-amber-500",
+  BARTENDER: "bg-violet-500",
 };
 
-const SHIFT_COLOR: Record<JobTitle, string> = {
-  SERVER: "bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-700",
-  HOST: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-200 dark:border-emerald-700",
-  BUSSER: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-700",
-  BARTENDER: "bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-900/40 dark:text-purple-200 dark:border-purple-700",
+const ROLE_INK: Record<JobTitle, string> = {
+  SERVER: "text-sky-700 dark:text-sky-300",
+  HOST: "text-emerald-700 dark:text-emerald-300",
+  BUSSER: "text-amber-700 dark:text-amber-400",
+  BARTENDER: "text-violet-700 dark:text-violet-300",
+};
+
+const ROLE_CHIP: Record<JobTitle, string> = {
+  SERVER: "bg-sky-50 border-sky-200 text-sky-900 dark:bg-sky-950/40 dark:border-sky-800 dark:text-sky-100",
+  HOST: "bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-100",
+  BUSSER: "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-100",
+  BARTENDER: "bg-violet-50 border-violet-200 text-violet-900 dark:bg-violet-950/40 dark:border-violet-800 dark:text-violet-100",
 };
 
 interface ShiftData {
   id: string;
-  date: string; // yyyy-MM-dd
+  date: string;
   jobTitle: JobTitle;
   startTime: string;
   endTime: string | null;
@@ -55,11 +62,11 @@ interface Employee {
 }
 
 interface Props {
-  dayStrs: string[]; // 6 strings yyyy-MM-dd
+  dayStrs: string[];
   currentUserId: string;
   isManager: boolean;
   shifts: ShiftData[];
-  reqMap: Record<string, number>; // key `${dow}-${role}` -> count
+  reqMap: Record<string, number>;
   employeesByRole: Record<JobTitle, Employee[]>;
 }
 
@@ -84,7 +91,6 @@ export default function MobileSchedule({
 
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
-  // If dayStrs change (week navigation), reset selection
   useEffect(() => {
     setSelectedIndex(initialIndex);
   }, [initialIndex]);
@@ -100,21 +106,21 @@ export default function MobileSchedule({
   return (
     <div className="space-y-4">
       {/* Day pager */}
-      <div className="flex items-center justify-between gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 shadow-sm">
+      <div className="flex items-center justify-between gap-2 bg-surface border border-line rounded-xl px-2 py-2">
         <button
           type="button"
           onClick={() => canPrev && setSelectedIndex(selectedIndex - 1)}
           disabled={!canPrev}
           aria-label="Previous day"
-          className="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-2.5 rounded-md text-ink-muted disabled:opacity-30 hover:bg-sunken hover:text-ink"
         >
           <ChevronLeftIcon className="w-5 h-5" />
         </button>
         <div className="text-center">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted">
             {format(selectedDate, "EEEE")}
           </div>
-          <div className="text-base font-bold text-gray-900 dark:text-gray-100">
+          <div className="font-mono tnum text-[18px] font-semibold text-ink mt-0.5">
             {format(selectedDate, "MMM d")}
           </div>
         </div>
@@ -123,14 +129,14 @@ export default function MobileSchedule({
           onClick={() => canNext && setSelectedIndex(selectedIndex + 1)}
           disabled={!canNext}
           aria-label="Next day"
-          className="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-2.5 rounded-md text-ink-muted disabled:opacity-30 hover:bg-sunken hover:text-ink"
         >
           <ChevronRightIcon className="w-5 h-5" />
         </button>
       </div>
 
       {/* Day chip strip */}
-      <div className="flex gap-2 overflow-x-auto -mx-1 px-1 pb-1">
+      <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1">
         {dayStrs.map((s, i) => {
           const d = parseLocal(s);
           const isToday = isSameDay(d, today);
@@ -140,18 +146,21 @@ export default function MobileSchedule({
               key={s}
               type="button"
               onClick={() => setSelectedIndex(i)}
-              className={`shrink-0 min-w-[52px] flex flex-col items-center justify-center rounded-lg px-2 py-1.5 border ${
+              className={`relative shrink-0 min-w-[52px] flex flex-col items-center justify-center rounded-md px-2 py-2 border transition-colors ${
                 isSelected
-                  ? "bg-indigo-600 border-indigo-600 text-white"
+                  ? "bg-ink border-ink text-paper"
                   : isToday
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300"
-                  : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"
+                  ? "bg-accent-soft border-accent-edge text-accent"
+                  : "bg-surface border-line text-ink-soft"
               }`}
             >
-              <span className="text-[10px] font-semibold uppercase tracking-wide">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.14em]">
                 {format(d, "EEE")}
               </span>
-              <span className="text-sm font-bold">{format(d, "d")}</span>
+              <span className="font-mono tnum text-[15px] font-semibold mt-0.5">{format(d, "d")}</span>
+              {isToday && !isSelected && (
+                <span className="absolute -bottom-0.5 left-2 right-2 h-[2px] bg-accent rounded-full" />
+              )}
             </button>
           );
         })}
@@ -235,41 +244,56 @@ function RoleSection({
   }
 
   return (
-    <section className={`rounded-xl border bg-white dark:bg-gray-800 shadow-sm overflow-hidden ${short ? "border-red-300 dark:border-red-800" : "border-gray-200 dark:border-gray-700"}`}>
-      <header className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100 dark:border-gray-700">
+    <section className={`rounded-xl border bg-surface overflow-hidden ${short ? "border-red-300 dark:border-red-900" : "border-line"}`}>
+      <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-line-soft">
         <div className="flex items-center gap-2">
-          <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${ROLE_BADGE[role]}`}>
+          <span className={`w-2 h-2 rounded-full ${ROLE_DOT[role]}`} />
+          <span className={`text-[13px] font-semibold ${ROLE_INK[role]}`}>
             {JOB_LABEL[role]}
           </span>
-          {required > 0 && (
-            <span className={`text-xs font-semibold ${short ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`}>
-              {assigned}/{required} staffed
-            </span>
-          )}
         </div>
+        {required > 0 && (
+          <span
+            className={`font-mono tnum text-[11px] ${
+              short ? "text-red-600 dark:text-red-400 font-semibold" : "text-ink-muted"
+            }`}
+          >
+            {assigned}/{required} staffed
+          </span>
+        )}
       </header>
 
       <div className="p-3 space-y-2">
         {regular.length === 0 && training.length === 0 && (
-          <p className="text-sm text-gray-400 dark:text-gray-500 italic">No shifts scheduled.</p>
+          <p className="text-[13px] text-ink-faint italic">No shifts scheduled.</p>
         )}
 
         {regular.map((s) => {
           const isMe = s.assignedUserId === currentUserId;
-          const chipClass = s.isOffered
-            ? "bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-700"
-            : isMe
-            ? "bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-200 dark:border-indigo-700"
-            : SHIFT_COLOR[role];
+          let chipClass: string;
+          let dotClass: string;
+          if (s.isOffered) {
+            chipClass = "bg-orange-50 border-orange-200 text-orange-900 dark:bg-orange-950/40 dark:border-orange-800 dark:text-orange-100";
+            dotClass = "bg-orange-500";
+          } else if (isMe) {
+            chipClass = "bg-surface border-accent-edge text-ink ring-1 ring-accent/20";
+            dotClass = "bg-accent";
+          } else {
+            chipClass = ROLE_CHIP[role];
+            dotClass = ROLE_DOT[role];
+          }
           return (
-            <div key={s.id} className={`flex items-center justify-between gap-2 border rounded-lg px-3 py-2.5 ${chipClass}`}>
-              <div className="min-w-0">
-                <div className="text-sm font-semibold truncate">
-                  {s.assignedUserName ?? <span className="italic opacity-70">Unassigned</span>}
-                </div>
-                <div className="text-xs font-medium opacity-90 mt-0.5">
-                  {formatTime(s.startTime)}
-                  {s.isOffered && <span className="ml-2 text-orange-700 dark:text-orange-300 font-semibold uppercase tracking-wide text-[10px]">Offered</span>}
+            <div key={s.id} className={`flex items-center justify-between gap-2 border rounded-md px-3 py-2.5 ${chipClass}`}>
+              <div className="min-w-0 flex items-center gap-2.5">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} />
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold truncate">
+                    {s.assignedUserName ?? <span className="italic opacity-60">Unassigned</span>}
+                  </div>
+                  <div className="font-mono tnum text-[12px] opacity-80 mt-0.5">
+                    {formatTime(s.startTime)}
+                    {s.isOffered && <span className="ml-2 text-orange-700 dark:text-orange-300 font-semibold uppercase tracking-[0.14em] text-[10px]">Offered</span>}
+                  </div>
                 </div>
               </div>
               {isManager && (
@@ -278,9 +302,9 @@ function RoleSection({
                   onClick={() => handleDelete(s.id)}
                   disabled={pending}
                   aria-label="Remove shift"
-                  className="shrink-0 p-2 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 disabled:opacity-40"
+                  className="shrink-0 p-2 rounded-md hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 disabled:opacity-40"
                 >
-                  <XMarkIcon className="w-5 h-5" />
+                  <XMarkIcon className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -290,11 +314,17 @@ function RoleSection({
         {training.map((s) => (
           <div
             key={s.id}
-            className="flex items-center justify-between gap-2 border rounded-lg px-3 py-2.5 bg-violet-100 text-violet-900 border-violet-300 dark:bg-violet-900/40 dark:text-violet-200 dark:border-violet-700"
+            className="flex items-center justify-between gap-2 border rounded-md px-3 py-2.5 bg-violet-50 border-violet-200 text-violet-900 dark:bg-violet-950/40 dark:border-violet-800 dark:text-violet-100"
           >
-            <div className="min-w-0">
-              <div className="text-sm font-semibold truncate">🎓 {s.traineeName ?? "Trainee"}</div>
-              <div className="text-xs font-medium opacity-90 mt-0.5">w/ {s.assignedUserName}</div>
+            <div className="min-w-0 flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold truncate flex items-center gap-2">
+                  {s.traineeName ?? "Trainee"}
+                  <span className="text-[9px] uppercase tracking-[0.14em] opacity-70 font-semibold">train</span>
+                </div>
+                <div className="text-[12px] opacity-80 mt-0.5">w/ {s.assignedUserName}</div>
+              </div>
             </div>
             {isManager && (
               <button
@@ -302,9 +332,9 @@ function RoleSection({
                 onClick={() => handleDelete(s.id)}
                 disabled={pending}
                 aria-label="Remove training shift"
-                className="shrink-0 p-2 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 disabled:opacity-40"
+                className="shrink-0 p-2 rounded-md hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 disabled:opacity-40"
               >
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -314,7 +344,7 @@ function RoleSection({
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg py-2.5 border border-dashed border-gray-300 dark:border-gray-600"
+            className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold text-ink-faint hover:text-accent hover:bg-accent-soft rounded-md py-2.5 border border-dashed border-line hover:border-accent-edge"
           >
             <PlusIcon className="w-4 h-4" />
             Add shift
@@ -322,14 +352,14 @@ function RoleSection({
         )}
 
         {isManager && showForm && (
-          <div className="bg-gray-50 dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 rounded-xl p-3 space-y-3">
+          <div className="bg-sunken border border-accent-edge rounded-xl p-3 space-y-3">
             <div className="flex flex-wrap gap-1.5">
               {PRESETS.map((p) => (
                 <button
                   key={p.label}
                   type="button"
                   onClick={() => setStartRaw(p.start)}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold"
+                  className="text-xs px-2.5 py-1.5 rounded-md bg-surface border border-line text-ink-soft hover:bg-accent-soft hover:text-accent hover:border-accent-edge font-semibold"
                 >
                   {p.label}
                 </button>
@@ -341,13 +371,13 @@ function RoleSection({
               placeholder="e.g. 3:30 or 9pm"
               value={startRaw}
               onChange={(e) => setStartRaw(e.target.value)}
-              className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-line rounded-md px-3 py-2.5 text-base text-ink bg-surface focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent-edge"
             />
 
             <select
               value={assignedUserId}
               onChange={(e) => setAssignedUserId(e.target.value)}
-              className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-line rounded-md px-3 py-2.5 text-base text-ink bg-surface focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent-edge"
             >
               <option value="">— Unassigned —</option>
               {employees.map((e) => (
@@ -364,7 +394,7 @@ function RoleSection({
                 type="button"
                 onClick={handleAdd}
                 disabled={pending}
-                className="flex-1 bg-indigo-600 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                className="flex-1 bg-accent text-accent-fg text-sm font-semibold py-2.5 rounded-md hover:bg-[var(--accent-hover)] disabled:opacity-50"
               >
                 {pending ? "Saving…" : "Add shift"}
               </button>
@@ -375,7 +405,7 @@ function RoleSection({
                   setError(null);
                   setStartRaw("3:00pm");
                 }}
-                className="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="px-4 py-2.5 text-sm font-semibold text-ink-soft border border-line rounded-md hover:bg-sunken"
               >
                 Cancel
               </button>

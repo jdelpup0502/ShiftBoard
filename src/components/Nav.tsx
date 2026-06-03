@@ -26,28 +26,26 @@ const managerLinks = [
 ];
 
 const adminLinks = [
-  { href: "/manage/audit", label: "Audit Log", icon: ClipboardDocumentListIcon },
+  { href: "/manage/audit", label: "Audit", icon: ClipboardDocumentListIcon },
 ];
+
+const linkClass =
+  "flex items-center gap-2 px-3 h-14 text-[13px] text-ink-soft hover:text-ink hover:bg-sunken transition-colors";
 
 export default function Nav({ user }: { user: User }) {
   return (
-    <nav className="hidden md:block bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-      <div className="px-4 md:px-6 flex items-center justify-between h-14">
-        {/* Brand */}
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 shrink-0">
-            <CalendarDaysIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-            <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 tracking-tight">ShiftBoard</span>
-          </div>
+    <nav className="hidden md:block bg-surface border-b border-line">
+      <div className="px-6 lg:px-8 flex items-center justify-between h-14">
+        <div className="flex items-center gap-10">
+          {/* Wordmark */}
+          <Link href="/dashboard" className="flex items-baseline gap-1.5 shrink-0 group">
+            <span className="wordmark text-[22px] text-ink leading-none">shiftboard</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-accent translate-y-[-1px] transition-transform group-hover:scale-125" />
+          </Link>
 
-          {/* Nav links */}
           <div className="flex items-center">
             {navLinks.filter(({ href }) => !(href === "/availability" && user.role === "MANAGER")).map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex items-center gap-1.5 px-3 h-14 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
+              <Link key={href} href={href} className={linkClass}>
                 <Icon className="w-4 h-4" />
                 {label}
               </Link>
@@ -55,23 +53,15 @@ export default function Nav({ user }: { user: User }) {
 
             {(user.role === "MANAGER" || user.isAdmin) && (
               <>
-                <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
+                <div className="w-px h-4 bg-line mx-2" />
                 {managerLinks.map(({ href, label, icon: Icon }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-1.5 px-3 h-14 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
+                  <Link key={href} href={href} className={linkClass}>
                     <Icon className="w-4 h-4" />
                     {label}
                   </Link>
                 ))}
                 {user.isAdmin && adminLinks.map(({ href, label, icon: Icon }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-1.5 px-3 h-14 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
+                  <Link key={href} href={href} className={linkClass}>
                     <Icon className="w-4 h-4" />
                     {label}
                   </Link>
@@ -81,29 +71,28 @@ export default function Nav({ user }: { user: User }) {
           </div>
         </div>
 
-        {/* User area */}
         <div className="flex items-center gap-3">
-          <Link href="/account" className="flex items-center gap-2.5 hover:opacity-75 transition-opacity">
-            <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 uppercase shrink-0">
+          <Link href="/account" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <div className="w-7 h-7 rounded-full bg-accent-soft border border-accent-edge flex items-center justify-center text-[11px] font-semibold text-accent uppercase shrink-0">
               {user.name[0]}
             </div>
-            <div className="text-right">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-200 leading-none">{user.name}</div>
+            <div className="text-right leading-none">
+              <div className="text-[13px] font-medium text-ink">{user.name}</div>
               {(user.role === "MANAGER" || user.isAdmin) && (
-                <div className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-ink-muted mt-1 tnum">
                   {user.isAdmin ? "Admin" : "Manager"}
                 </div>
               )}
             </div>
           </Link>
 
-          <div className="flex items-center gap-1 border-l border-gray-200 dark:border-gray-700 pl-3">
+          <div className="flex items-center gap-1 border-l border-line pl-3">
             <ThemeToggle />
             <form action={logout}>
               <button
                 type="submit"
                 title="Sign out"
-                className="flex items-center p-2.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center p-2.5 rounded-md text-ink-muted hover:text-ink hover:bg-sunken transition-colors"
               >
                 <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
               </button>

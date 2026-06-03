@@ -8,11 +8,18 @@ import type { JobTitle } from "@prisma/client";
 import { formatTime } from "@/lib/time";
 import { parseTimeInput, PRESETS } from "./scheduleCellUtils";
 
-const SHIFT_COLOR: Record<JobTitle, string> = {
-  SERVER: "bg-blue-200 text-blue-900 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-700",
-  HOST: "bg-emerald-200 text-emerald-900 border-emerald-300 dark:bg-emerald-900/50 dark:text-emerald-200 dark:border-emerald-700",
-  BUSSER: "bg-amber-200 text-amber-900 border-amber-300 dark:bg-amber-900/50 dark:text-amber-200 dark:border-amber-700",
-  BARTENDER: "bg-purple-200 text-purple-900 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-700",
+const ROLE_DOT: Record<JobTitle, string> = {
+  SERVER: "bg-sky-500",
+  HOST: "bg-emerald-500",
+  BUSSER: "bg-amber-500",
+  BARTENDER: "bg-violet-500",
+};
+
+const ROLE_CHIP: Record<JobTitle, string> = {
+  SERVER: "bg-sky-50 border-sky-200 text-sky-900 dark:bg-sky-950/40 dark:border-sky-800 dark:text-sky-100",
+  HOST: "bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-100",
+  BUSSER: "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-100",
+  BARTENDER: "bg-violet-50 border-violet-200 text-violet-900 dark:bg-violet-950/40 dark:border-violet-800 dark:text-violet-100",
 };
 
 interface ShiftData {
@@ -91,15 +98,19 @@ export default function ScheduleCell({
   }
 
   const cellBg = isToday
-    ? "bg-indigo-100 dark:bg-indigo-900/20"
+    ? "bg-accent-soft"
     : short
-    ? "bg-red-100 dark:bg-red-900/20"
+    ? "bg-red-50 dark:bg-red-950/20"
     : "";
 
   return (
-    <td className={`border-l border-gray-200 dark:border-gray-700 p-2 align-top ${cellBg}`} style={{ minHeight: "7rem" }}>
+    <td className={`border-l border-line p-2 align-top ${cellBg}`} style={{ minHeight: "7rem" }}>
       {required > 0 && (
-        <div className={`text-xs font-bold mb-1.5 ${short ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+        <div
+          className={`text-[10px] font-mono tnum tracking-wider mb-1.5 ${
+            short ? "text-red-600 dark:text-red-400 font-semibold" : "text-ink-muted"
+          }`}
+        >
           {assigned}/{required}
         </div>
       )}
@@ -107,29 +118,39 @@ export default function ScheduleCell({
       <div className="space-y-1.5">
         {regularShifts.map((s) => {
           const isMe = s.assignedUserId === currentUserId;
-          const chipClass = s.isOffered
-            ? "bg-orange-100 text-orange-900 border border-orange-300 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-700"
-            : isMe
-            ? "bg-indigo-100 text-indigo-900 border border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-200 dark:border-indigo-700"
-            : `${SHIFT_COLOR[jobTitle]} border`;
+          let chipClass: string;
+          let dotClass: string;
+          if (s.isOffered) {
+            chipClass = "bg-orange-50 border-orange-200 text-orange-900 dark:bg-orange-950/40 dark:border-orange-800 dark:text-orange-100";
+            dotClass = "bg-orange-500";
+          } else if (isMe) {
+            chipClass = "bg-surface border-accent-edge text-ink ring-1 ring-accent/20";
+            dotClass = "bg-accent";
+          } else {
+            chipClass = ROLE_CHIP[jobTitle];
+            dotClass = ROLE_DOT[jobTitle];
+          }
 
           return (
-            <div key={s.id} className={`text-xs rounded-lg px-2 py-1.5 ${chipClass} relative group`}>
-              <div className="font-semibold truncate pr-4">
-                {s.assignedUserName ?? <span className="italic text-gray-500 dark:text-gray-400">Unassigned</span>}
+            <div key={s.id} className={`text-[11px] rounded-md border px-2 py-1.5 ${chipClass} relative group`}>
+              <div className="flex items-center gap-1.5 pr-4">
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />
+                <span className="font-semibold truncate">
+                  {s.assignedUserName ?? <span className="italic opacity-60">Unassigned</span>}
+                </span>
               </div>
-              <div className="font-medium mt-0.5">{formatTime(s.startTime)}</div>
+              <div className="font-mono tnum text-[11px] mt-0.5 ml-3 opacity-80">{formatTime(s.startTime)}</div>
               {s.isOffered && (
-                <div className="text-orange-600 dark:text-orange-400 font-semibold text-[10px]">offered</div>
+                <div className="ml-3 text-orange-600 dark:text-orange-400 font-semibold text-[9px] uppercase tracking-[0.12em]">offered</div>
               )}
               {isManager && (
                 <button
                   onClick={() => handleDelete(s.id)}
                   disabled={pending}
-                  className="absolute top-1 right-1 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity disabled:opacity-30"
+                  className="absolute top-1 right-1 p-1 opacity-70 md:opacity-0 md:group-hover:opacity-70 hover:!opacity-100 hover:text-red-600 transition-opacity disabled:!opacity-30"
                   title="Remove shift"
                 >
-                  <XMarkIcon className="w-4 h-4" />
+                  <XMarkIcon className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -139,15 +160,19 @@ export default function ScheduleCell({
         {trainingShifts.map((s) => (
           <div
             key={s.id}
-            className="text-xs rounded-lg px-2 py-1.5 bg-violet-100 text-violet-900 border border-violet-300 dark:bg-violet-900/40 dark:text-violet-200 dark:border-violet-700 relative group"
+            className="text-[11px] rounded-md border px-2 py-1.5 bg-violet-50 border-violet-200 text-violet-900 dark:bg-violet-950/40 dark:border-violet-800 dark:text-violet-100 relative group"
           >
-            <div className="font-semibold truncate pr-4">🎓 {s.traineeName ?? "Trainee"}</div>
-            <div className="font-medium mt-0.5 truncate text-violet-700 dark:text-violet-300">w/ {s.assignedUserName}</div>
+            <div className="flex items-center gap-1.5 pr-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
+              <span className="font-semibold truncate">{s.traineeName ?? "Trainee"}</span>
+              <span className="text-[9px] uppercase tracking-[0.14em] opacity-70">train</span>
+            </div>
+            <div className="text-[10px] mt-0.5 ml-3 opacity-80 truncate">w/ {s.assignedUserName}</div>
             {isManager && (
               <button
                 onClick={() => handleDelete(s.id)}
                 disabled={pending}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity disabled:opacity-30"
+                className="absolute top-1 right-1 p-1 opacity-70 md:opacity-0 md:group-hover:opacity-70 hover:!opacity-100 hover:text-red-600 transition-opacity disabled:!opacity-30"
               >
                 <XMarkIcon className="w-3 h-3" />
               </button>
@@ -159,7 +184,7 @@ export default function ScheduleCell({
       {isManager && !showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="mt-1.5 w-full flex items-center justify-center gap-1 text-[11px] font-semibold text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg py-1 transition-colors border border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-300"
+          className="mt-1.5 w-full flex items-center justify-center gap-1 text-[10px] font-semibold tracking-wide text-ink-faint hover:text-accent hover:bg-accent-soft rounded-md py-1 transition-colors border border-dashed border-line hover:border-accent-edge"
         >
           <PlusIcon className="w-3 h-3" />
           Add
@@ -167,14 +192,14 @@ export default function ScheduleCell({
       )}
 
       {isManager && showForm && (
-        <div className="mt-1.5 bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 rounded-xl shadow-lg p-3 space-y-2 z-10">
+        <div className="mt-1.5 bg-surface border border-accent-edge rounded-md shadow-[0_4px_16px_-4px_oklch(0_0_0/0.12)] p-2.5 space-y-2 z-10">
           <div className="flex flex-wrap gap-1">
             {PRESETS.map((p) => (
               <button
                 key={p.label}
                 type="button"
                 onClick={() => applyPreset(p)}
-                className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors"
+                className="text-[10px] px-1.5 py-0.5 rounded bg-sunken text-ink-soft hover:bg-accent-soft hover:text-accent font-medium transition-colors"
               >
                 {p.label}
               </button>
@@ -186,13 +211,13 @@ export default function ScheduleCell({
             placeholder="e.g. 3:30 or 9pm"
             value={startRaw}
             onChange={(e) => setStartRaw(e.target.value)}
-            className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-1.5 py-1 text-[11px] text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+            className="w-full border border-line rounded-md px-2 py-1 text-[11px] text-ink bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent-edge"
           />
 
           <select
             value={assignedUserId}
             onChange={(e) => setAssignedUserId(e.target.value)}
-            className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 text-[11px] text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+            className="w-full border border-line rounded-md px-2 py-1 text-[11px] text-ink bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent-edge"
           >
             <option value="">— Unassigned —</option>
             {employees.map((e) => (
@@ -206,13 +231,13 @@ export default function ScheduleCell({
             <button
               onClick={handleAdd}
               disabled={pending}
-              className="flex-1 bg-indigo-600 text-white text-[11px] font-semibold py-1 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="flex-1 bg-accent text-accent-fg text-[11px] font-semibold py-1 rounded-md hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
             >
               {pending ? "…" : "Add shift"}
             </button>
             <button
               onClick={() => { setShowForm(false); setError(null); setStartRaw("3:00pm"); }}
-              className="px-2 py-1 text-[11px] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-2 py-1 text-[11px] text-ink-muted hover:text-ink border border-line rounded-md hover:bg-sunken"
             >
               Cancel
             </button>

@@ -2,7 +2,6 @@
 
 import { claimShift } from "@/app/actions/shifts";
 import { useTransition, useState } from "react";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 export default function ClaimButton({ offerId }: { offerId: string }) {
   const [pending, startTransition] = useTransition();
@@ -21,12 +20,11 @@ export default function ClaimButton({ offerId }: { offerId: string }) {
       <button
         onClick={handleClaim}
         disabled={pending}
-        className="w-full md:w-auto flex items-center justify-center gap-1.5 bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2.5 md:py-2 rounded-lg text-sm font-semibold disabled:opacity-50 transition-colors shadow-sm"
+        className="w-full md:w-auto flex items-center justify-center gap-1.5 bg-accent text-accent-fg hover:bg-[var(--accent-hover)] px-5 py-2.5 md:py-2 rounded-md text-[13px] font-semibold uppercase tracking-[0.1em] disabled:opacity-50 transition-colors"
       >
-        <CheckCircleIcon className="w-4 h-4" />
-        {pending ? "Claiming…" : "Claim"}
+        {pending ? "Claiming…" : "Claim shift"}
       </button>
-      {error && <p className="text-xs text-red-600 mt-1 md:text-right">{error}</p>}
+      {error && <p className="text-[11px] text-red-600 mt-1 md:text-right">{error}</p>}
     </div>
   );
 }

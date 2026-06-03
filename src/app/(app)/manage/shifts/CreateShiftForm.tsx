@@ -3,7 +3,7 @@
 import { createShift } from "@/app/actions/shifts";
 import { useState, useTransition } from "react";
 import type { JobTitle } from "@prisma/client";
-import { PlusIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 const JOB_TITLES: JobTitle[] = ["SERVER", "HOST", "BUSSER", "BARTENDER"];
 const JOB_LABEL: Record<JobTitle, string> = {
@@ -36,21 +36,19 @@ export default function CreateShiftForm({ employees }: { employees: Employee[] }
     });
   }
 
-  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors placeholder-gray-400";
+  const inputClass =
+    "w-full border border-line rounded-md px-3 py-2 text-sm text-ink bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/35 focus:border-accent-edge transition-colors placeholder:text-ink-faint";
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-      <h2 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-        <PlusIcon className="w-4 h-4 text-indigo-500" />
-        Create New Shift
-      </h2>
+    <div className="bg-surface border border-line rounded-xl p-6">
+      <h2 className="text-[18px] font-semibold tracking-tight text-ink mb-5">Create new shift</h2>
       <form action={handleSubmit} className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Date</label>
+          <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">Date</label>
           <input name="date" type="date" required className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Job Title</label>
+          <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">Role</label>
           <select
             name="jobTitle"
             value={selectedRole}
@@ -63,15 +61,15 @@ export default function CreateShiftForm({ employees }: { employees: Employee[] }
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Start Time</label>
+          <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">Start time</label>
           <input name="startTime" type="time" required className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">End Time</label>
+          <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">End time</label>
           <input name="endTime" type="time" required className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Assigned Employee</label>
+          <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">Assigned employee</label>
           <select name="assignedUserId" className={inputClass}>
             <option value="">— Unassigned —</option>
             {eligibleEmployees.map((e) => (
@@ -88,15 +86,15 @@ export default function CreateShiftForm({ employees }: { employees: Employee[] }
                 onChange={(e) => setIsTraining(e.target.checked)}
                 className="sr-only"
               />
-              <div className={`w-10 h-6 rounded-full transition-colors ${isTraining ? "bg-indigo-600" : "bg-gray-200"}`} />
+              <div className={`w-10 h-6 rounded-full transition-colors ${isTraining ? "bg-accent" : "bg-line"}`} />
               <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${isTraining ? "translate-x-4" : ""}`} />
             </div>
-            <span className="text-sm font-medium text-gray-700">Training shift</span>
+            <span className="text-[13px] font-medium text-ink-soft">Training shift</span>
           </label>
         </div>
         {isTraining && (
           <div className="col-span-2">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Trainee</label>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">Trainee</label>
             <select name="traineeUserId" className={inputClass}>
               <option value="">— Select trainee —</option>
               {employees.map((e) => (
@@ -109,13 +107,13 @@ export default function CreateShiftForm({ employees }: { employees: Employee[] }
           <button
             type="submit"
             disabled={pending}
-            className="bg-indigo-600 text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+            className="bg-accent text-accent-fg rounded-md px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.1em] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
           >
-            {pending ? "Creating…" : "Create Shift"}
+            {pending ? "Creating…" : "Create shift"}
           </button>
           {success && (
-            <span className="flex items-center gap-1.5 text-sm text-emerald-600 font-semibold">
-              <CheckIcon className="w-4 h-4" /> Shift created!
+            <span className="flex items-center gap-1.5 text-[13px] text-emerald-600 dark:text-emerald-400 font-semibold">
+              <CheckIcon className="w-4 h-4" /> Shift created
             </span>
           )}
         </div>

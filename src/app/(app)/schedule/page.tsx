@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { startOfWeek, addDays, format, isSameDay } from "date-fns";
 import type { JobTitle } from "@prisma/client";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
 import ScheduleHeader from "./ScheduleHeader";
 import WeekNav from "./WeekNav";
@@ -27,18 +26,18 @@ const JOB_LABEL: Record<JobTitle, string> = {
   BARTENDER: "Bartender",
 };
 
-const JOB_ROW_COLOR: Record<JobTitle, string> = {
-  SERVER: "bg-blue-100 dark:bg-blue-900/30",
-  HOST: "bg-emerald-100 dark:bg-emerald-900/30",
-  BUSSER: "bg-amber-100 dark:bg-amber-900/30",
-  BARTENDER: "bg-purple-100 dark:bg-purple-900/30",
+const ROLE_DOT: Record<JobTitle, string> = {
+  SERVER: "bg-sky-500",
+  HOST: "bg-emerald-500",
+  BUSSER: "bg-amber-500",
+  BARTENDER: "bg-violet-500",
 };
 
-const ROLE_BADGE: Record<JobTitle, string> = {
-  SERVER: "bg-blue-600 text-white",
-  HOST: "bg-emerald-600 text-white",
-  BUSSER: "bg-amber-500 text-white",
-  BARTENDER: "bg-purple-600 text-white",
+const ROLE_INK: Record<JobTitle, string> = {
+  SERVER: "text-sky-700 dark:text-sky-300",
+  HOST: "text-emerald-700 dark:text-emerald-300",
+  BUSSER: "text-amber-700 dark:text-amber-400",
+  BARTENDER: "text-violet-700 dark:text-violet-300",
 };
 
 export default async function SchedulePage({
@@ -106,8 +105,7 @@ export default async function SchedulePage({
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <CalendarDaysIcon className="w-6 h-6 text-gray-400 hidden md:block" />
+      <div className="mb-6 md:mb-8">
         <WeekNav weekOffset={weekOffset} weekOfLabel={weekOfLabel} />
       </div>
 
@@ -124,11 +122,11 @@ export default async function SchedulePage({
       </div>
 
       {/* Desktop: weekly table */}
-      <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-line bg-surface">
         <table className="w-full border-collapse text-sm table-fixed">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-28 bg-gray-100 dark:bg-gray-700">
+            <tr className="border-b border-line">
+              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted w-28 bg-sunken align-bottom">
                 Role
               </th>
               <ScheduleHeader dayStrs={days.map((d) => format(d, "yyyy-MM-dd"))} />
@@ -136,11 +134,14 @@ export default async function SchedulePage({
           </thead>
           <tbody>
             {JOB_TITLES.map((role, ri) => (
-              <tr key={role} className={ri < JOB_TITLES.length - 1 ? "border-b border-gray-200 dark:border-gray-700" : ""}>
-                <td className={`px-4 py-3 align-top ${JOB_ROW_COLOR[role]}`}>
-                  <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${ROLE_BADGE[role]}`}>
-                    {JOB_LABEL[role]}
-                  </span>
+              <tr key={role} className={ri < JOB_TITLES.length - 1 ? "border-b border-line" : ""}>
+                <td className="px-4 py-3 align-top bg-sunken">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${ROLE_DOT[role]}`} />
+                    <span className={`text-[13px] font-semibold ${ROLE_INK[role]}`}>
+                      {JOB_LABEL[role]}
+                    </span>
+                  </div>
                 </td>
                 {days.map((day) => {
                   const dow = day.getDay();
@@ -180,11 +181,11 @@ export default async function SchedulePage({
         </table>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-100 border border-indigo-300 inline-block" /> Your shift</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-orange-100 border border-orange-300 inline-block" /> Offered up</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-violet-100 border border-violet-300 inline-block" /> Training</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Understaffed</span>
+      <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-ink-muted">
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-accent inline-block" /> Your shift</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> Offered up</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500 inline-block" /> Training</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Understaffed</span>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { requireManager } from "@/lib/auth";
 import StaffingGrid from "./StaffingGrid";
 import type { JobTitle } from "@prisma/client";
-import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 const DAYS = [
   { label: "Tue", dow: 2 },
@@ -11,7 +10,7 @@ const DAYS = [
   { label: "Fri", dow: 5 },
   { label: "Sat", dow: 6 },
   { label: "Sun", dow: 0 },
-]; // closed Mondays
+];
 const JOB_TITLES: JobTitle[] = ["SERVER", "HOST", "BUSSER", "BARTENDER"];
 
 export default async function StaffingPage() {
@@ -25,12 +24,9 @@ export default async function StaffingPage() {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center gap-3 mb-6">
-        <ClipboardDocumentListIcon className="w-6 h-6 text-gray-400" />
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Staffing Requirements</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Set how many employees are needed per role each day.</p>
-        </div>
+      <div className="mb-8 md:mb-10">
+        <h1 className="display text-[34px] md:text-[44px] text-ink leading-none">Staffing</h1>
+        <p className="text-[13px] text-ink-muted mt-3">Set how many people are needed per role each day.</p>
       </div>
       <StaffingGrid days={DAYS} jobTitles={JOB_TITLES} initialGrid={grid} />
     </div>

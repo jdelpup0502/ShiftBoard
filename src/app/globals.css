@@ -1,11 +1,164 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ---------- Design tokens ---------- */
+
+:root {
+  /* Type stacks. Family vars are injected by next/font in layout.tsx. */
+  --font-display: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Surfaces — light. True off-white body, pure white cards. */
+  --paper: oklch(0.985 0 0);
+  --surface: oklch(1 0 0);
+  --elevated: oklch(1 0 0);
+  --line: oklch(0.915 0.004 250);
+  --line-soft: oklch(0.955 0.003 250);
+  --sunken: oklch(0.965 0.003 250);
+
+  /* Text — light. Cool-leaning ink with a real ramp. */
+  --ink: oklch(0.205 0.012 255);
+  --ink-soft: oklch(0.36 0.012 255);
+  --ink-muted: oklch(0.5 0.01 255);
+  --ink-faint: oklch(0.62 0.008 255);
+
+  /* Brand accent: ember / persimmon. Warm hue 38, hospitality-coded. */
+  --accent: oklch(0.625 0.195 38);
+  --accent-hover: oklch(0.555 0.185 38);
+  --accent-active: oklch(0.485 0.165 38);
+  --accent-soft: oklch(0.965 0.025 38);
+  --accent-soft-hover: oklch(0.93 0.055 38);
+  --accent-fg: oklch(0.99 0 0);
+  --accent-edge: oklch(0.83 0.11 38);
+  --accent-ring: oklch(0.625 0.195 38 / 0.35);
 }
 
+:where(.dark) {
+  --paper: oklch(0.162 0.014 255);
+  --surface: oklch(0.205 0.016 255);
+  --elevated: oklch(0.235 0.017 255);
+  --line: oklch(0.31 0.014 255);
+  --line-soft: oklch(0.255 0.013 255);
+  --sunken: oklch(0.185 0.014 255);
+
+  --ink: oklch(0.965 0.003 255);
+  --ink-soft: oklch(0.82 0.008 255);
+  --ink-muted: oklch(0.64 0.012 255);
+  --ink-faint: oklch(0.5 0.014 255);
+
+  --accent: oklch(0.72 0.185 40);
+  --accent-hover: oklch(0.78 0.18 40);
+  --accent-active: oklch(0.66 0.185 40);
+  --accent-soft: oklch(0.32 0.08 40 / 0.45);
+  --accent-soft-hover: oklch(0.38 0.1 40 / 0.6);
+  --accent-fg: oklch(0.16 0.05 40);
+  --accent-edge: oklch(0.52 0.16 40);
+  --accent-ring: oklch(0.72 0.185 40 / 0.45);
+}
+
+/* ---------- Tailwind v4 theme bindings ---------- */
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Custom color tokens → utilities (bg-paper, text-ink, border-line, etc.) */
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-edge: var(--accent-edge);
+  --color-accent-fg: var(--accent-fg);
+
+  /* Remap indigo → ember so every existing indigo-X class inherits the new identity. */
+  --color-indigo-50: oklch(0.97 0.022 38);
+  --color-indigo-100: oklch(0.93 0.058 38);
+  --color-indigo-200: oklch(0.875 0.105 38);
+  --color-indigo-300: oklch(0.81 0.145 38);
+  --color-indigo-400: oklch(0.74 0.175 38);
+  --color-indigo-500: oklch(0.68 0.192 38);
+  --color-indigo-600: oklch(0.625 0.195 38);
+  --color-indigo-700: oklch(0.555 0.185 38);
+  --color-indigo-800: oklch(0.465 0.155 38);
+  --color-indigo-900: oklch(0.37 0.115 38);
+  --color-indigo-950: oklch(0.26 0.07 38);
+
+  /* Violet (training shifts) — shift to plum/wine so it harmonizes with the warm accent. */
+  --color-violet-100: oklch(0.94 0.04 350);
+  --color-violet-200: oklch(0.89 0.07 350);
+  --color-violet-300: oklch(0.81 0.1 350);
+  --color-violet-600: oklch(0.55 0.16 350);
+  --color-violet-700: oklch(0.46 0.14 350);
+  --color-violet-800: oklch(0.36 0.11 350);
+  --color-violet-900: oklch(0.28 0.08 350);
+}
+
+/* ---------- Base ---------- */
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* ---------- Utilities ---------- */
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+
+/* Ember underline used on active/today markers. */
+.ember-underline {
+  background-image: linear-gradient(to right, var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-size: 100% 2px;
+  background-position: 0 100%;
+  padding-bottom: 2px;
+}
+
+/* Hairline divider that reads cleaner than a Tailwind border in dark mode. */
+.hairline {
+  border-color: var(--line);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

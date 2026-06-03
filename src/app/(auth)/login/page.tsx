@@ -1,22 +1,31 @@
 import { login } from "@/app/actions/auth";
 import AuthForm from "../AuthForm";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600 shadow-lg mb-4">
-            <CalendarDaysIcon className="w-7 h-7 text-white" />
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-paper relative overflow-hidden">
+      {/* Ember corner wash */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 -right-32 w-[460px] h-[460px] rounded-full opacity-60 dark:opacity-40"
+        style={{ background: "radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)" }}
+      />
+      <div className="w-full max-w-sm relative">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-baseline gap-2 mb-6">
+            <span className="wordmark text-[42px] text-ink leading-none">shiftboard</span>
+            <span className="w-2 h-2 rounded-full bg-accent translate-y-[-3px]" />
           </div>
-          <h1 className="text-2xl font-bold text-black dark:text-white">ShiftBoard</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Sign in to your account</p>
+          <p className="text-[13px] text-ink-muted uppercase tracking-[0.18em] font-semibold">Sign in to continue</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 md:p-8">
+        <div className="bg-surface rounded-xl border border-line p-6 md:p-7">
           <AuthForm action={login} submitLabel="Sign in" />
         </div>
+
+        <p className="text-center text-[11px] text-ink-faint mt-6 uppercase tracking-[0.16em]">
+          Restaurant scheduling, simplified.
+        </p>
       </div>
     </div>
   );

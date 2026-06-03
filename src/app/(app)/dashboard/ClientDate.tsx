@@ -4,8 +4,8 @@ import { format } from "date-fns";
 
 export default function ClientDate() {
   return (
-    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-      {format(new Date(), "EEEE, MMMM d, yyyy")}
+    <p className="text-ink-muted text-[13px] mt-3 flex items-center gap-2">
+      <span className="font-mono tnum">{format(new Date(), "EEE · MMM d, yyyy").toLowerCase()}</span>
     </p>
   );
 }
