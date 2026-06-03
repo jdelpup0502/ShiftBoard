@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { rateLimit, recordFailure, getClientIp } from "@/lib/rate-limit";
 import { BCRYPT_COST, EmailSchema, PasswordSchema, formatZodError } from "@/lib/validation";
 import { z } from "zod";
 
@@ -23,13 +23,7 @@ export async function login(formData: FormData) {
   const ip = getClientIp(h.get("x-forwarded-for"));
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
 
-  const ipKey = `login:ip:${ip}`;
-  const emailKey = `login:email:${email}`;
-
-  if (!rateLimit(ipKey, 5, 15 * 60 * 1000) || !rateLimit(emailKey, 10, 60 * 60 * 1000)) {
-    await constantDelay();
-    return { error: "Too many attempts. Try again later." };
-  }
+  const failKey = `login:fail:${ip}:${email}`;
 
   const parsed = LoginSchema.safeParse({
     email: formData.get("email"),
@@ -40,6 +34,12 @@ export async function login(formData: FormData) {
     return { error: "Invalid email or password." };
   }
 
+  // Block only after many consecutive failed attempts — correct password always succeeds
+  if (!rateLimit(failKey, 20, 60 * 60 * 1000, false)) {
+    await constantDelay();
+    return { error: "Too many failed attempts. Try again in an hour." };
+  }
+
   const user = await db.user.findUnique({ where: { email: parsed.data.email } });
   const validPassword = user
     ? await bcrypt.compare(parsed.data.password, user.passwordHash)
@@ -48,6 +48,8 @@ export async function login(formData: FormData) {
   await constantDelay();
 
   if (!user || !validPassword) {
+    // Only count the window on failure
+    recordFailure(failKey, 20, 60 * 60 * 1000);
     return { error: "Invalid email or password." };
   }
 
