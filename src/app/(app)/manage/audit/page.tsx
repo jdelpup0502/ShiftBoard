@@ -7,7 +7,7 @@ export default async function AuditPage() {
 
   const logs = await db.auditLog.findMany({
     orderBy: { createdAt: "desc" },
-    take: 200,
+    take: 100,
     include: { actor: { select: { name: true } } },
   });
 
@@ -17,7 +17,7 @@ export default async function AuditPage() {
         <ClipboardDocumentListIcon className="w-6 h-6 text-gray-400" />
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Audit Log</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Last {logs.length} manager actions</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Most recent {logs.length} manager actions (rolling)</p>
         </div>
       </div>
 

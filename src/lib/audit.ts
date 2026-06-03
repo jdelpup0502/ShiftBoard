@@ -1,5 +1,7 @@
 import { db } from "./db";
 
+const MAX_AUDIT_ROWS = 100;
+
 export async function writeAuditLog(
   actorId: string,
   action: string,
@@ -16,4 +18,16 @@ export async function writeAuditLog(
       metadata: JSON.stringify(metadata ?? {}),
     },
   });
+
+  // Keep only the most recent MAX_AUDIT_ROWS entries
+  const cutoff = await db.auditLog.findFirst({
+    skip: MAX_AUDIT_ROWS - 1,
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  if (cutoff) {
+    await db.auditLog.deleteMany({
+      where: { createdAt: { lt: cutoff.createdAt } },
+    });
+  }
 }
