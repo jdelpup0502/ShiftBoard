@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { startOfWeek, addDays, format, isSameDay } from "date-fns";
+import { startOfDay, subDays, addDays, format, isSameDay } from "date-fns";
 import type { JobTitle } from "@prisma/client";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
@@ -31,14 +31,14 @@ const ROLE_BADGE: Record<JobTitle, string> = {
 export default async function SchedulePage() {
   const user = await requireUser();
   const isManager = user.role === "MANAGER";
-  const sunday = startOfWeek(new Date(), { weekStartsOn: 0 });
-  const days = Array.from({ length: 7 }, (_, i) => addDays(sunday, i)).filter(
-    (d) => d.getDay() !== 1,
-  );
+  const today = startOfDay(new Date());
+  const daysSinceTue = (today.getDay() - 2 + 7) % 7;
+  const tuesday = subDays(today, daysSinceTue);
+  const days = Array.from({ length: 6 }, (_, i) => addDays(tuesday, i));
 
   const [shifts, requirements, employees] = await Promise.all([
     db.shift.findMany({
-      where: { date: { gte: sunday, lt: addDays(sunday, 7) } },
+      where: { date: { gte: tuesday, lt: addDays(tuesday, 6) } },
       include: { assignedUser: true, trainee: true, offer: true },
       orderBy: { startTime: "asc" },
     }),
@@ -62,7 +62,7 @@ export default async function SchedulePage() {
         <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(sunday, "MMMM d, yyyy")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(tuesday, "MMMM d, yyyy")}</p>
         </div>
       </div>
 
