@@ -5,12 +5,12 @@ import type { JobTitle } from "@prisma/client";
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 const DAYS = [
-  { label: "Sun", dow: 0 },
   { label: "Tue", dow: 2 },
   { label: "Wed", dow: 3 },
   { label: "Thu", dow: 4 },
   { label: "Fri", dow: 5 },
   { label: "Sat", dow: 6 },
+  { label: "Sun", dow: 0 },
 ]; // closed Mondays
 const JOB_TITLES: JobTitle[] = ["SERVER", "HOST", "BUSSER", "BARTENDER"];
 
