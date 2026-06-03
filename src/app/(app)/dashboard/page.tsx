@@ -1,7 +1,8 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { format, isToday, isTomorrow, startOfDay } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import ClientDate from "./ClientDate";
+import NextShiftLabel from "./NextShiftLabel";
 import OfferButton from "./OfferButton";
 import CancelOfferButton from "./CancelOfferButton";
 import {
@@ -25,12 +26,6 @@ const JOB_COLOR: Record<string, string> = {
   BUSSER: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
   BARTENDER: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
 };
-
-function shiftDayLabel(date: Date) {
-  if (isToday(date)) return "Today";
-  if (isTomorrow(date)) return "Tomorrow";
-  return format(date, "EEEE, MMM d");
-}
 
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -88,7 +83,7 @@ export default async function DashboardPage() {
           {nextShift ? (
             <>
               <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatTime(nextShift.startTime)}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{shiftDayLabel(new Date(nextShift.date))}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><NextShiftLabel dateISO={nextShift.date.toISOString()} /></div>
             </>
           ) : (
             <>

@@ -31,14 +31,14 @@ const ROLE_BADGE: Record<JobTitle, string> = {
 export default async function SchedulePage() {
   const user = await requireUser();
   const isManager = user.role === "MANAGER";
-  const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i)).filter(
+  const sunday = startOfWeek(new Date(), { weekStartsOn: 0 });
+  const days = Array.from({ length: 7 }, (_, i) => addDays(sunday, i)).filter(
     (d) => d.getDay() !== 1,
   );
 
   const [shifts, requirements, employees] = await Promise.all([
     db.shift.findMany({
-      where: { date: { gte: monday, lt: addDays(monday, 7) } },
+      where: { date: { gte: sunday, lt: addDays(sunday, 7) } },
       include: { assignedUser: true, trainee: true, offer: true },
       orderBy: { startTime: "asc" },
     }),
@@ -62,7 +62,7 @@ export default async function SchedulePage() {
         <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(monday, "MMMM d, yyyy")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(sunday, "MMMM d, yyyy")}</p>
         </div>
       </div>
 
