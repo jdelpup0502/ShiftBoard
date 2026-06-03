@@ -39,7 +39,7 @@ export default function Nav({ user }: { user: User }) {
 
           {/* Nav links */}
           <div className="flex items-center">
-            {navLinks.filter(({ href }) => !(href === "/availability" && (user.role === "MANAGER" || user.isAdmin))).map(({ href, label, icon: Icon }) => (
+            {navLinks.filter(({ href }) => !(href === "/availability" && user.role === "MANAGER")).map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
