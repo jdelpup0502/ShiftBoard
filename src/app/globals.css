@@ -5,7 +5,7 @@
 
 :root {
   /* Type stacks. Family vars are injected by next/font in layout.tsx. */
-  --font-display: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, "Times New Roman", serif;
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
@@ -126,17 +126,19 @@ body {
 
 .wordmark {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.022em;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 144, "SOFT" 50;
 }
 
 .display {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.025em;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: -0.028em;
   line-height: 1.02;
+  font-variation-settings: "opsz" 144, "SOFT" 25;
 }
 
 /* Ember underline used on active/today markers. */
