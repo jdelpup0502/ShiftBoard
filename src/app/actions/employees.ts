@@ -41,7 +41,6 @@ export async function updateRole(userId: string, role: Role) {
   const parsed = RoleSchema.safeParse(role);
   if (!parsed.success) throw new Error("Invalid role.");
 
-  if (userId === manager.id) throw new Error("You cannot change your own role.");
 
   if (parsed.data === "EMPLOYEE") {
     const targetUser = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
