@@ -23,7 +23,7 @@ export default async function AvailabilityPage() {
       <div className="flex items-center gap-3 mb-6">
         <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Availability</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">My Availability</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(weekStart, "MMMM d, yyyy")}</p>
         </div>
       </div>

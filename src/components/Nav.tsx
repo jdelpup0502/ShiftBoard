@@ -28,8 +28,8 @@ const managerLinks = [
 
 export default function Nav({ user }: { user: User }) {
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-      <div className="px-6 flex items-center justify-between h-14">
+    <nav className="hidden md:block bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <div className="px-4 md:px-6 flex items-center justify-between h-14">
         {/* Brand */}
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2 shrink-0">
@@ -90,9 +90,9 @@ export default function Nav({ user }: { user: User }) {
               <button
                 type="submit"
                 title="Sign out"
-                className="flex items-center p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="flex items-center p-2.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <ArrowRightStartOnRectangleIcon className="w-4.5 h-4.5" />
+                <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
               </button>
             </form>
           </div>

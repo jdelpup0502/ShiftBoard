@@ -28,7 +28,7 @@ export default async function StaffingPage() {
       <div className="flex items-center gap-3 mb-6">
         <ClipboardDocumentListIcon className="w-6 h-6 text-gray-400" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Staffing Requirements</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Staffing Requirements</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Set how many employees are needed per role each day.</p>
         </div>
       </div>

@@ -24,7 +24,7 @@ export default function ProfileForm({ name, email }: Props) {
   }
 
   const inputClass =
-    "w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors";
+    "w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base md:text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors";
 
   return (
     <form action={handleSubmit} className="space-y-4">
@@ -53,7 +53,7 @@ export default function ProfileForm({ name, email }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="bg-indigo-600 text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+        className="w-full sm:w-auto bg-indigo-600 text-white rounded-lg px-5 py-2.5 sm:py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
       >
         {pending ? "Saving…" : "Save Changes"}
       </button>

@@ -12,6 +12,18 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - **Dark mode** uses Tailwind v4 class strategy (`@variant dark` in `globals.css`). The `.dark` class is toggled on `<html>` by `ThemeToggle`. The root `<html>` has `suppressHydrationWarning` to prevent mismatch from the inline anti-flash script.
 - **Timezone**: Railway runs UTC. Never use `new Date()` server-side for user-visible date comparisons (today/tomorrow labels, day highlighting). Use client components for those — see `ClientDate.tsx`, `NextShiftCard.tsx`, `ScheduleHeader.tsx`.
 - **No public signup** — accounts are created by managers/admins only via `/manage/employees`.
+- **Time-input parsing** lives in `src/app/(app)/schedule/scheduleCellUtils.ts` (`parseTimeInput`, `PRESETS`) and is shared by `ScheduleCell.tsx` (desktop) and `MobileSchedule.tsx` (mobile). Hours 1–11 with no AM/PM suffix are assumed PM.
+
+### Mobile / responsive
+
+- **Mobile-first**, with `md:` (≥768px) overrides for desktop. Default sizes assume a phone (~360–430px wide).
+- **Navigation split by breakpoint**: `src/components/Nav.tsx` is `hidden md:block`; `src/components/MobileTabBar.tsx` is `md:hidden` and renders a fixed bottom tab bar + slide-up "More" sheet. Both are mounted in `src/app/(app)/layout.tsx`.
+- **Schedule has two render paths**: weekly table (`hidden md:block`) and `MobileSchedule.tsx` day-at-a-time view (`md:hidden`). Keep them in sync when changing shift shape/props.
+- **Manager tables** (`/manage/availability`, `/manage/audit`, `/manage/staffing`) similarly render a card list below `md` and a table at `md+`.
+- **Always use `text-base md:text-sm` on text inputs** — `text-sm` (<16px) triggers iOS Safari focus-zoom.
+- **Don't gate critical actions on `:hover`** — touch devices can't trigger it. Schedule cell delete buttons are visible by default on mobile; only fade-in on hover at `md+`.
+- The `<main>` in `(app)/layout.tsx` includes `pb-24 md:pb-8` to clear the bottom tab bar.
+- Viewport meta (`device-width, initial-scale=1, viewport-fit=cover`) is exported from `src/app/layout.tsx` so `env(safe-area-inset-bottom)` works on iOS.
 
 ### Auth & roles
 
@@ -35,6 +47,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - bcrypt cost 12 (`BCRYPT_COST` in `src/lib/validation.ts`, re-exported from `src/lib/auth.ts`).
 - Password minimum: 12 characters (no complexity requirement).
 - CSP nonce generated per-request in `src/proxy.ts` (Next.js 16 proxy); forwarded via `x-nonce` header; read in `layout.tsx` via `await headers()`.
+- CSP includes `'unsafe-eval'` in `script-src` only when `NODE_ENV !== "production"` — React dev mode needs it for stack-trace reconstruction. Production CSP stays strict.
 - Security headers set in `src/proxy.ts`: CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS (production only).
 - Audit log: manager/admin actions are written to the `AuditLog` model via `src/lib/audit.ts`. Viewable at `/manage/audit`.
 - Startup env-var checks in `src/instrumentation.ts`.

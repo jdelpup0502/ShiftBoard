@@ -50,17 +50,17 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-4xl space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
           Welcome back, {user.name.split(" ")[0]} 👋
         </h1>
         <ClientDate />
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 md:p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Upcoming</span>
             <CalendarDaysIcon className="w-5 h-5 text-indigo-400" />
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
           <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">shifts scheduled</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 md:p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Offered</span>
             <ArrowRightCircleIcon className="w-5 h-5 text-orange-400" />
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
           <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">shifts offered up</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 md:p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Next shift</span>
             <ClockIcon className="w-5 h-5 text-emerald-400" />
@@ -105,26 +105,26 @@ export default async function DashboardPage() {
               return (
                 <div
                   key={shift.id}
-                  className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-3.5 shadow-sm hover:shadow-md transition-shadow"
+                  className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-3 md:px-5 md:py-3.5 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4 min-w-0">
                     <div className="text-center min-w-[44px]">
                       <div className="text-xs font-semibold text-gray-400 uppercase">{format(d, "EEE")}</div>
                       <div className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{format(d, "d")}</div>
                     </div>
                     <div className="w-px h-8 bg-gray-100 dark:bg-gray-700" />
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         {formatTime(shift.startTime)}
                       </div>
                       <div className="text-xs text-gray-400">{format(d, "MMM yyyy")}</div>
                     </div>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${JOB_COLOR[shift.jobTitle]}`}>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${JOB_COLOR[shift.jobTitle]}`}>
                       {JOB_LABEL[shift.jobTitle]}
                     </span>
                   </div>
                   {shift.offer?.status === "OPEN" ? (
-                    <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700 px-3 py-1 rounded-full font-semibold">
+                    <span className="self-start md:self-auto text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700 px-3 py-1 rounded-full font-semibold">
                       Offered up
                     </span>
                   ) : (
@@ -150,21 +150,21 @@ export default async function DashboardPage() {
               return (
                 <div
                   key={offer.id}
-                  className="flex items-center justify-between bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-xl px-5 py-3.5"
+                  className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-xl px-4 py-3 md:px-5 md:py-3.5"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4 min-w-0">
                     <div className="text-center min-w-[44px]">
                       <div className="text-xs font-semibold text-orange-400 uppercase">{format(d, "EEE")}</div>
                       <div className="text-xl font-bold text-orange-700 dark:text-orange-300 leading-none">{format(d, "d")}</div>
                     </div>
                     <div className="w-px h-8 bg-orange-200 dark:bg-orange-800" />
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         {formatTime(offer.shift.startTime)}
                       </div>
                       <div className="text-xs text-gray-400">{format(d, "MMM yyyy")}</div>
                     </div>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${JOB_COLOR[offer.shift.jobTitle]}`}>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${JOB_COLOR[offer.shift.jobTitle]}`}>
                       {JOB_LABEL[offer.shift.jobTitle]}
                     </span>
                   </div>

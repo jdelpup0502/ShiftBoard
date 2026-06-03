@@ -32,8 +32,8 @@ export default function WeekNav({ weekOffset, weekOfLabel }: Props) {
   return (
     <div className="flex items-center gap-3">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
+        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
           Week of {weekOfLabel}
           {weekOffset !== 0 && (
             <span

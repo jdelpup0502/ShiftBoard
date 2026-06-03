@@ -62,28 +62,30 @@ export default function AvailabilityGrid({ weekStartISO, initial }: Props) {
         return (
           <div
             key={dow}
-            className={`rounded-xl border px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-colors ${
+            className={`rounded-xl border px-4 py-3 md:px-5 md:py-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-colors ${
               available
                 ? "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}
           >
-            <div className="flex items-center gap-4 min-w-[180px]">
+            <div className="flex items-center gap-3 sm:gap-4 sm:min-w-[180px]">
               <button
+                type="button"
                 onClick={() => toggle(dow)}
-                className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
+                aria-label={available ? `${label} available, tap to mark unavailable` : `${label} unavailable, tap to mark available`}
+                className={`w-12 h-7 rounded-full transition-colors relative flex-shrink-0 ${
                   available ? "bg-emerald-500" : "bg-red-400"
                 }`}
               >
                 <span
-                  className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                  className={`absolute top-[2px] left-[2px] w-6 h-6 bg-white rounded-full shadow transition-transform ${
                     available ? "translate-x-5" : "translate-x-0"
                   }`}
                 />
               </button>
-              <span className="font-semibold text-sm text-gray-800 dark:text-gray-200 w-24">{label}</span>
+              <span className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex-1 sm:flex-none sm:w-24">{label}</span>
               <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                   available
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
                     : "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
@@ -97,7 +99,7 @@ export default function AvailabilityGrid({ weekStartISO, initial }: Props) {
               placeholder="Note (optional)"
               value={note}
               onChange={(e) => setNote(dow, e.target.value)}
-              className="flex-1 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+              className="w-full sm:flex-1 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 md:py-1.5 text-base md:text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-gray-400 dark:placeholder:text-gray-500"
             />
           </div>
         );
@@ -107,7 +109,7 @@ export default function AvailabilityGrid({ weekStartISO, initial }: Props) {
         <button
           onClick={handleSave}
           disabled={pending}
-          className="bg-indigo-600 text-white rounded-lg px-6 py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+          className="w-full sm:w-auto bg-indigo-600 text-white rounded-lg px-6 py-2.5 sm:py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
         >
           {pending ? "Saving…" : "Save Availability"}
         </button>

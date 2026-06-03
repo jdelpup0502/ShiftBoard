@@ -40,9 +40,9 @@ export default async function MarketplacePage() {
     <div className="max-w-3xl">
       <div className="flex items-center gap-3 mb-2">
         <ShoppingBagIcon className="w-6 h-6 text-gray-400" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Shift Marketplace</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Shift Marketplace</h1>
       </div>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Pick up open shifts from your coworkers.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 md:mb-8">Pick up open shifts from your coworkers.</p>
 
       {claimable.length === 0 ? (
         <div className="bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-12 text-center">
@@ -57,24 +57,24 @@ export default async function MarketplacePage() {
             return (
               <div
                 key={offer.id}
-                className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition-shadow"
+                className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-3 md:px-5 md:py-4 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 md:gap-4 min-w-0">
                   <div className="text-center min-w-[44px]">
                     <div className="text-xs font-semibold text-gray-400 uppercase">{format(d, "EEE")}</div>
                     <div className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{format(d, "d")}</div>
                     <div className="text-xs text-gray-400">{format(d, "MMM")}</div>
                   </div>
                   <div className="w-px h-10 bg-gray-100 dark:bg-gray-700" />
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatTime(offer.shift.startTime)}
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5">
+                    <div className="text-xs text-gray-400 mt-0.5 truncate">
                       Offered by <span className="font-medium text-gray-600 dark:text-gray-300">{offer.offeredBy.name}</span>
                     </div>
                   </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${JOB_COLOR[offer.shift.jobTitle]}`}>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${JOB_COLOR[offer.shift.jobTitle]}`}>
                     {JOB_LABEL[offer.shift.jobTitle]}
                   </span>
                 </div>
@@ -97,24 +97,24 @@ export default async function MarketplacePage() {
               return (
                 <div
                   key={offer.id}
-                  className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-3.5 opacity-60"
+                  className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-3 md:px-5 md:py-3.5 opacity-60"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4 min-w-0">
                     <div className="text-center min-w-[44px]">
                       <div className="text-xs font-semibold text-gray-400 uppercase">{format(d, "EEE")}</div>
                       <div className="text-xl font-bold text-gray-500 dark:text-gray-400 leading-none">{format(d, "d")}</div>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
                         {formatTime(offer.shift.startTime)}
                       </div>
-                      <div className="text-xs text-gray-400">{check.reason}</div>
+                      <div className="text-xs text-gray-400 truncate">{check.reason}</div>
                     </div>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${JOB_COLOR[offer.shift.jobTitle]}`}>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${JOB_COLOR[offer.shift.jobTitle]}`}>
                       {JOB_LABEL[offer.shift.jobTitle]}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400 font-medium">Not eligible</span>
+                  <span className="text-xs text-gray-400 font-medium self-start md:self-auto">Not eligible</span>
                 </div>
               );
             })}

@@ -16,11 +16,11 @@ export default async function EmployeesPage() {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           <UserGroupIcon className="w-6 h-6 text-gray-400" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Employees</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Employees</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">{users.length} team member{users.length !== 1 ? "s" : ""}</p>
           </div>
         </div>

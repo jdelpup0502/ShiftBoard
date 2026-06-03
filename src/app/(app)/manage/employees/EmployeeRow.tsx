@@ -56,14 +56,14 @@ export default function EmployeeRow({ user, currentJobTitles, allJobTitles }: Pr
   }
 
   return (
-    <div className={`px-5 py-4 flex items-center gap-4 flex-wrap transition-opacity ${pending ? "opacity-50" : ""}`}>
-      <div className="flex items-center gap-3 min-w-[180px]">
-        <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-sm font-bold uppercase shrink-0">
+    <div className={`px-4 py-3 md:px-5 md:py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 md:flex-wrap transition-opacity ${pending ? "opacity-50" : ""}`}>
+      <div className="flex items-center gap-3 md:min-w-[180px]">
+        <div className="w-10 h-10 md:w-9 md:h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-sm font-bold uppercase shrink-0">
           {user.name[0]}
         </div>
-        <div>
-          <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">{user.name}</div>
-          <div className="text-xs text-gray-400">{user.email}</div>
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">{user.name}</div>
+          <div className="text-xs text-gray-400 truncate">{user.email}</div>
         </div>
       </div>
 
@@ -71,8 +71,9 @@ export default function EmployeeRow({ user, currentJobTitles, allJobTitles }: Pr
         {allJobTitles.map((job) => (
           <button
             key={job}
+            type="button"
             onClick={() => toggleJob(job)}
-            className={`text-xs px-2.5 py-1 rounded-full border font-semibold transition-colors ${
+            className={`text-xs px-3 py-1.5 rounded-full border font-semibold transition-colors ${
               selected.has(job)
                 ? JOB_ACTIVE[job]
                 : "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-400"
@@ -83,36 +84,40 @@ export default function EmployeeRow({ user, currentJobTitles, allJobTitles }: Pr
         ))}
       </div>
 
-      <select
-        value={role}
-        onChange={(e) => { setRole(e.target.value as Role); setSaved(false); }}
-        className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-2.5 py-1.5 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100"
-      >
-        <option value="EMPLOYEE">Employee</option>
-        <option value="MANAGER">Manager</option>
-      </select>
+      <div className="flex items-center gap-2 md:contents">
+        <select
+          value={role}
+          onChange={(e) => { setRole(e.target.value as Role); setSaved(false); }}
+          className="flex-1 md:flex-none text-sm md:text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 md:px-2.5 md:py-1.5 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100"
+        >
+          <option value="EMPLOYEE">Employee</option>
+          <option value="MANAGER">Manager</option>
+        </select>
 
-      <div className="flex items-center gap-2 ml-auto">
-        {saved && (
-          <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-            <CheckIcon className="w-3.5 h-3.5" /> Saved
-          </span>
-        )}
-        <button
-          onClick={handleSave}
-          disabled={pending}
-          className="text-xs bg-indigo-600 text-white rounded-lg px-3 py-1.5 font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-        >
-          Save
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={pending}
-          title="Remove employee"
-          className="text-gray-300 dark:text-gray-600 hover:text-red-500 disabled:opacity-50 transition-colors"
-        >
-          <TrashIcon className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2 md:ml-auto">
+          {saved && (
+            <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              <CheckIcon className="w-3.5 h-3.5" /> Saved
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={pending}
+            className="text-sm md:text-xs bg-indigo-600 text-white rounded-lg px-4 py-2 md:px-3 md:py-1.5 font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={pending}
+            aria-label="Remove employee"
+            className="p-2 -mr-1 text-gray-400 dark:text-gray-500 hover:text-red-500 disabled:opacity-50 transition-colors"
+          >
+            <TrashIcon className="w-5 h-5 md:w-4 md:h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );

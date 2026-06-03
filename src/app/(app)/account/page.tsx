@@ -7,9 +7,9 @@ export default async function AccountPage() {
   const user = await requireUser();
 
   return (
-    <div className="max-w-lg space-y-8">
+    <div className="max-w-lg space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Account</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Account</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your profile and password.</p>
       </div>
 
@@ -30,7 +30,7 @@ export default async function AccountPage() {
       </div>
 
       {/* Profile section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 md:p-6">
         <div className="flex items-center gap-2 mb-5">
           <UserCircleIcon className="w-5 h-5 text-gray-400" />
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Profile</h2>
@@ -39,7 +39,7 @@ export default async function AccountPage() {
       </div>
 
       {/* Password section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 md:p-6">
         <div className="flex items-center gap-2 mb-5">
           <LockClosedIcon className="w-5 h-5 text-gray-400" />
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Change Password</h2>

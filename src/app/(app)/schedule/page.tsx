@@ -6,6 +6,7 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
 import ScheduleHeader from "./ScheduleHeader";
 import WeekNav from "./WeekNav";
+import MobileSchedule from "./MobileSchedule";
 import { pruneOldShifts } from "@/lib/cleanup";
 
 const MIN_WEEK_OFFSET = -1;
@@ -76,14 +77,54 @@ export default async function SchedulePage({
     reqMap.set(`${r.dayOfWeek}-${r.jobTitle}`, r.count);
   }
 
+  const reqRecord: Record<string, number> = {};
+  reqMap.forEach((v, k) => {
+    reqRecord[k] = v;
+  });
+
+  const dayStrs = days.map((d) => format(d, "yyyy-MM-dd"));
+
+  const mobileShifts = shifts.map((s) => ({
+    id: s.id,
+    date: format(new Date(s.date), "yyyy-MM-dd"),
+    jobTitle: s.jobTitle,
+    startTime: s.startTime,
+    endTime: s.endTime,
+    assignedUserId: s.assignedUserId,
+    assignedUserName: s.assignedUser?.name ?? null,
+    isTraining: s.isTraining,
+    traineeName: s.trainee?.name ?? null,
+    isOffered: s.offer?.status === "OPEN",
+  }));
+
+  const employeesByRole = {
+    SERVER: employees.filter((e) => e.jobTitles.some((j) => j.jobTitle === "SERVER")).map((e) => ({ id: e.id, name: e.name })),
+    HOST: employees.filter((e) => e.jobTitles.some((j) => j.jobTitle === "HOST")).map((e) => ({ id: e.id, name: e.name })),
+    BUSSER: employees.filter((e) => e.jobTitles.some((j) => j.jobTitle === "BUSSER")).map((e) => ({ id: e.id, name: e.name })),
+    BARTENDER: employees.filter((e) => e.jobTitles.some((j) => j.jobTitle === "BARTENDER")).map((e) => ({ id: e.id, name: e.name })),
+  };
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
+        <CalendarDaysIcon className="w-6 h-6 text-gray-400 hidden md:block" />
         <WeekNav weekOffset={weekOffset} weekOfLabel={weekOfLabel} />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
+      {/* Mobile: day-at-a-time view */}
+      <div className="md:hidden">
+        <MobileSchedule
+          dayStrs={dayStrs}
+          currentUserId={user.id}
+          isManager={isManager}
+          shifts={mobileShifts}
+          reqMap={reqRecord}
+          employeesByRole={employeesByRole}
+        />
+      </div>
+
+      {/* Desktop: weekly table */}
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
         <table className="w-full border-collapse text-sm table-fixed">
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-700">

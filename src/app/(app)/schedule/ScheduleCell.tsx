@@ -6,21 +6,7 @@ import { addShiftSlot, deleteShift } from "@/app/actions/shifts";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import type { JobTitle } from "@prisma/client";
 import { formatTime } from "@/lib/time";
-
-function parseTimeInput(raw: string): string | null {
-  const s = raw.trim().toLowerCase();
-  const ampm = s.endsWith("am") || s.endsWith("pm") ? s.slice(-2) : null;
-  const timePart = ampm ? s.slice(0, -2).trim() : s;
-  const [hStr, mStr] = timePart.split(":");
-  let h = parseInt(hStr, 10);
-  const m = mStr !== undefined ? parseInt(mStr, 10) : 0;
-  if (isNaN(h) || isNaN(m) || m < 0 || m > 59) return null;
-  if (ampm === "pm" && h !== 12) h += 12;
-  else if (ampm === "am" && h === 12) h = 0;
-  else if (!ampm && h >= 1 && h <= 11) h += 12;
-  if (h < 0 || h > 23) return null;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-}
+import { parseTimeInput, PRESETS } from "./scheduleCellUtils";
 
 const SHIFT_COLOR: Record<JobTitle, string> = {
   SERVER: "bg-blue-200 text-blue-900 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-700",
@@ -54,13 +40,6 @@ interface Props {
   shifts: ShiftData[];
   employees: Employee[];
 }
-
-const PRESETS = [
-  { label: "2:30", start: "2:30pm" },
-  { label: "3:00", start: "3:00pm" },
-  { label: "3:30", start: "3:30pm" },
-  { label: "4:00", start: "4:00pm" },
-];
 
 export default function ScheduleCell({
   dateStr,
@@ -147,10 +126,10 @@ export default function ScheduleCell({
                 <button
                   onClick={() => handleDelete(s.id)}
                   disabled={pending}
-                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity disabled:opacity-30"
+                  className="absolute top-1 right-1 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity disabled:opacity-30"
                   title="Remove shift"
                 >
-                  <XMarkIcon className="w-3 h-3" />
+                  <XMarkIcon className="w-4 h-4" />
                 </button>
               )}
             </div>

@@ -17,16 +17,16 @@ export default function ClaimButton({ offerId }: { offerId: string }) {
   }
 
   return (
-    <div className="text-right shrink-0">
+    <div className="w-full md:w-auto md:text-right shrink-0">
       <button
         onClick={handleClaim}
         disabled={pending}
-        className="flex items-center gap-1.5 bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50 transition-colors shadow-sm"
+        className="w-full md:w-auto flex items-center justify-center gap-1.5 bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2.5 md:py-2 rounded-lg text-sm font-semibold disabled:opacity-50 transition-colors shadow-sm"
       >
         <CheckCircleIcon className="w-4 h-4" />
         {pending ? "Claiming…" : "Claim"}
       </button>
-      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+      {error && <p className="text-xs text-red-600 mt-1 md:text-right">{error}</p>}
     </div>
   );
 }

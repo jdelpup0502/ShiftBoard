@@ -32,7 +32,7 @@ export default async function ManagerAvailabilityPage() {
       <div className="flex items-center gap-3 mb-6">
         <UserGroupIcon className="w-6 h-6 text-gray-400" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Staff Availability</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Staff Availability</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(weekStart, "MMMM d, yyyy")}</p>
         </div>
       </div>
@@ -40,7 +40,56 @@ export default async function ManagerAvailabilityPage() {
       {employees.length === 0 ? (
         <p className="text-gray-400 text-sm">No employees found.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
+        <>
+        {/* Mobile: per-employee cards */}
+        <div className="md:hidden space-y-3">
+          {employees.map((emp) => {
+            const empAvail = byUser[emp.id] ?? {};
+            const hasSubmitted = Object.keys(empAvail).length > 0;
+            return (
+              <div key={emp.id} className="rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                  <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">{emp.name}</div>
+                  {!hasSubmitted && <span className="text-xs italic text-gray-400">No response</span>}
+                </div>
+                <div className="grid grid-cols-3 gap-2 p-3">
+                  {DAYS.map(({ dow, label }) => {
+                    const rec = empAvail[dow];
+                    const available = rec?.available ?? true;
+                    return (
+                      <div key={dow} className="flex flex-col items-center gap-1 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-900/40">
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</span>
+                        {!hasSubmitted ? (
+                          <span className="text-gray-300 dark:text-gray-600 text-sm">—</span>
+                        ) : (
+                          <>
+                            <span
+                              className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                available
+                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
+                                  : "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
+                              }`}
+                            >
+                              {available ? "✓" : "✗"}
+                            </span>
+                            {rec?.note && (
+                              <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center px-1 line-clamp-2" title={rec.note}>
+                                {rec.note}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
@@ -103,6 +152,7 @@ export default async function ManagerAvailabilityPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
