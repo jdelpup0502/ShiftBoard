@@ -51,8 +51,16 @@ export default function ShiftManagerRow({ shift, employees }: Props) {
   const eligibleEmployees = employees.filter((e) => e.jobTitles.includes(shift.jobTitle));
 
   function handleAssign(e: React.ChangeEvent<HTMLSelectElement>) {
-    const userId = e.target.value || null;
-    startTransition(() => assignShift(shift.id, userId));
+    const select = e.target;
+    const userId = select.value || null;
+    const previousValue = shift.assignedUserId ?? "";
+    startTransition(async () => {
+      const result = await assignShift(shift.id, userId);
+      if (result?.error) {
+        alert(result.error);
+        select.value = previousValue;
+      }
+    });
   }
 
   function handleDelete() {

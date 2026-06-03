@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUser, requireManager } from "@/lib/auth";
-import { canClaim, hasJobTitle } from "@/lib/eligibility";
+import { canClaim, hasJobTitle, hasShiftOnDate } from "@/lib/eligibility";
 import { writeAuditLog } from "@/lib/audit";
 import { JobTitleSchema, formatZodError } from "@/lib/validation";
 import type { JobTitle } from "@prisma/client";
@@ -95,6 +95,9 @@ export async function createShift(formData: FormData): Promise<{ error?: string 
   if (assignedUserId) {
     const qualified = await hasJobTitle(assignedUserId, parsed.data.jobTitle);
     if (!qualified) return { error: "Assigned user is not trained for this role." };
+    if (await hasShiftOnDate(assignedUserId, date)) {
+      return { error: "That employee is already scheduled on this day." };
+    }
   }
 
   if (traineeUserId) {
@@ -147,6 +150,9 @@ export async function addShiftSlot(
   if (assignedUserId) {
     const qualified = await hasJobTitle(assignedUserId, parsed.data.jobTitle);
     if (!qualified) return { error: "Assigned user is not trained for this role." };
+    if (await hasShiftOnDate(assignedUserId, date)) {
+      return { error: "That employee is already scheduled on this day." };
+    }
   }
 
   const shift = await db.shift.create({
@@ -179,12 +185,20 @@ export async function deleteShift(shiftId: string) {
   revalidatePath("/manage/shifts");
 }
 
-export async function assignShift(shiftId: string, userId: string | null) {
+export async function assignShift(shiftId: string, userId: string | null): Promise<{ error?: string }> {
   const manager = await requireManager();
+  if (userId) {
+    const shift = await db.shift.findUnique({ where: { id: shiftId }, select: { date: true } });
+    if (!shift) return { error: "Shift not found." };
+    if (await hasShiftOnDate(userId, shift.date, shiftId)) {
+      return { error: "That employee is already scheduled on this day." };
+    }
+  }
   await db.shift.update({ where: { id: shiftId }, data: { assignedUserId: userId } });
   await writeAuditLog(manager.id, "ASSIGN_SHIFT", "Shift", shiftId, {
     assignedTo: userId ?? "unassigned",
   });
   revalidatePath("/schedule");
   revalidatePath("/manage/shifts");
+  return {};
 }
