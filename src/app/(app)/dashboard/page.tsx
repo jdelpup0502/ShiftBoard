@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { format, startOfDay } from "date-fns";
 import ClientDate from "./ClientDate";
-import NextShiftLabel from "./NextShiftLabel";
+import NextShiftCard from "./NextShiftCard";
 import OfferButton from "./OfferButton";
 import CancelOfferButton from "./CancelOfferButton";
 import {
@@ -44,7 +44,10 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const nextShift = myShifts[0] ?? null;
+  const nextShiftCandidates = myShifts.map((s) => ({
+    dateStr: format(s.date, "yyyy-MM-dd"),
+    startTime: s.startTime,
+  }));
 
   return (
     <div className="max-w-4xl space-y-8">
@@ -80,17 +83,7 @@ export default async function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Next shift</span>
             <ClockIcon className="w-5 h-5 text-emerald-400" />
           </div>
-          {nextShift ? (
-            <>
-              <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatTime(nextShift.startTime)}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><NextShiftLabel dateStr={format(nextShift.date, "yyyy-MM-dd")} /></div>
-            </>
-          ) : (
-            <>
-              <div className="text-lg font-bold text-gray-400">—</div>
-              <div className="text-sm text-gray-400 mt-0.5">None coming up</div>
-            </>
-          )}
+          <NextShiftCard shifts={nextShiftCandidates} />
         </div>
       </div>
 

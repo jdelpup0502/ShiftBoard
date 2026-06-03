@@ -10,7 +10,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - **After any schema change**: run `npx prisma migrate dev --name <name>` then `npx prisma generate`, then clear `.next/` and restart the dev server to avoid Turbopack serving stale compiled chunks.
 - **iron-session cookies** can only be written in Server Actions or Route Handlers — never in Server Components. `requireUser()` in `src/lib/auth.ts` just redirects on failure; it does not call `session.destroy()`.
 - **Dark mode** uses Tailwind v4 class strategy (`@variant dark` in `globals.css`). The `.dark` class is toggled on `<html>` by `ThemeToggle`. The root `<html>` has `suppressHydrationWarning` to prevent mismatch from the inline anti-flash script.
-- **Timezone**: Railway runs UTC. Never use `new Date()` server-side for user-visible date comparisons (today/tomorrow labels, day highlighting). Use client components for those — see `ClientDate.tsx`, `NextShiftLabel.tsx`, `ScheduleHeader.tsx`.
+- **Timezone**: Railway runs UTC. Never use `new Date()` server-side for user-visible date comparisons (today/tomorrow labels, day highlighting). Use client components for those — see `ClientDate.tsx`, `NextShiftCard.tsx`, `ScheduleHeader.tsx`.
 - **No public signup** — accounts are created by managers/admins only via `/manage/employees`.
 
 ### Auth & roles
@@ -67,4 +67,4 @@ npm run dev
 | Shift marketplace | `src/app/(app)/marketplace/` |
 | Availability (employee) | `src/app/(app)/availability/` |
 | Manager tools | `src/app/(app)/manage/` |
-| Client-side date components | `ClientDate.tsx`, `NextShiftLabel.tsx`, `ScheduleHeader.tsx` |
+| Client-side date components | `ClientDate.tsx`, `NextShiftCard.tsx`, `ScheduleHeader.tsx` |
