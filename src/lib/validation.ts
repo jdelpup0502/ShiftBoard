@@ -27,11 +27,7 @@ export const NoteSchema = z
 export const PasswordSchema = z
   .string()
   .min(12, "Password must be at least 12 characters.")
-  .max(128, "Password is too long.")
-  .refine(
-    (pw) => /[a-zA-Z]/.test(pw) && /\d/.test(pw),
-    "Password must contain at least one letter and one number.",
-  );
+  .max(128, "Password is too long.");
 
 export const DayOfWeekSchema = z.coerce
   .number()
