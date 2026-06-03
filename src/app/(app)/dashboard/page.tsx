@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { format, isToday, isTomorrow } from "date-fns";
+import ClientDate from "./ClientDate";
 import OfferButton from "./OfferButton";
 import CancelOfferButton from "./CancelOfferButton";
 import {
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           Welcome back, {user.name.split(" ")[0]} 👋
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+        <ClientDate />
       </div>
 
       {/* Stat cards */}
@@ -187,7 +188,7 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      {user.role === "MANAGER" && (
+      {(user.role === "MANAGER" || user.isAdmin) && (
         <div className="rounded-xl bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 px-5 py-4 text-sm text-indigo-800 dark:text-indigo-300">
           <span className="font-semibold">Manager access:</span> Use the nav above to manage staffing,
           employees, and shifts.

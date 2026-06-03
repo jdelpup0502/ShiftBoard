@@ -12,6 +12,7 @@ model User {
   passwordHash  String
   name          String
   role          Role           @default(EMPLOYEE)
+  isAdmin       Boolean        @default(false)
   jobTitles     EmployeeJob[]
   shifts        Shift[]        @relation("AssignedShifts")
   trainingFor   Shift[]        @relation("TraineeShifts")

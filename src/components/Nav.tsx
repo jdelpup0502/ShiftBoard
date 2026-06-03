@@ -50,7 +50,7 @@ export default function Nav({ user }: { user: User }) {
               </Link>
             ))}
 
-            {user.role === "MANAGER" && (
+            {(user.role === "MANAGER" || user.isAdmin) && (
               <>
                 <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
                 {managerLinks.map(({ href, label, icon: Icon }) => (
@@ -76,8 +76,10 @@ export default function Nav({ user }: { user: User }) {
             </div>
             <div className="text-right">
               <div className="text-sm font-medium text-gray-700 dark:text-gray-200 leading-none">{user.name}</div>
-              {user.role === "MANAGER" && (
-                <div className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Manager</div>
+              {(user.role === "MANAGER" || user.isAdmin) && (
+                <div className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
+                  {user.isAdmin ? "Admin" : "Manager"}
+                </div>
               )}
             </div>
           </Link>

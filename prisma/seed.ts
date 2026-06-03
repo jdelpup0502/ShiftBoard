@@ -33,8 +33,9 @@ async function main() {
     data: {
       email: adminEmail,
       passwordHash,
-      name: "Manager",
-      role: Role.MANAGER,
+      name: "Admin",
+      role: Role.EMPLOYEE,
+      isAdmin: true,
     },
   });
 
