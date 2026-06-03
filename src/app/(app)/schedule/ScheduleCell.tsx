@@ -46,7 +46,7 @@ interface Employee {
 }
 
 interface Props {
-  dateISO: string;
+  dateStr: string;
   jobTitle: JobTitle;
   required: number;
   currentUserId: string;
@@ -63,7 +63,7 @@ const PRESETS = [
 ];
 
 export default function ScheduleCell({
-  dateISO,
+  dateStr,
   jobTitle,
   required,
   currentUserId,
@@ -77,7 +77,8 @@ export default function ScheduleCell({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const isToday = isSameDay(new Date(dateISO), new Date());
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const isToday = isSameDay(new Date(y, m - 1, d), new Date());
   const regularShifts = shifts.filter((s) => !s.isTraining);
   const trainingShifts = shifts.filter((s) => s.isTraining);
   const assigned = regularShifts.filter((s) => s.assignedUserId).length;
@@ -95,7 +96,7 @@ export default function ScheduleCell({
       return;
     }
     startTransition(async () => {
-      const result = await addShiftSlot(dateISO, jobTitle, parsed, assignedUserId || null);
+      const result = await addShiftSlot(dateStr, jobTitle, parsed, assignedUserId || null);
       if (result.error) {
         setError(result.error);
       } else {

@@ -71,7 +71,7 @@ export default async function SchedulePage() {
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-28 bg-gray-100 dark:bg-gray-700">
                 Role
               </th>
-              <ScheduleHeader dayISOs={days.map((d) => d.toISOString())} />
+              <ScheduleHeader dayStrs={days.map((d) => format(d, "yyyy-MM-dd"))} />
             </tr>
           </thead>
           <tbody>
@@ -95,7 +95,7 @@ export default async function SchedulePage() {
                   return (
                     <ScheduleCell
                       key={day.toISOString()}
-                      dateISO={day.toISOString()}
+                      dateStr={format(day, "yyyy-MM-dd")}
                       jobTitle={role}
                       required={required}
                       currentUserId={user.id}
