@@ -6,13 +6,15 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
 import ScheduleHeader from "./ScheduleHeader";
 import WeekNav from "./WeekNav";
+import { pruneOldShifts } from "@/lib/cleanup";
 
+const MIN_WEEK_OFFSET = -1;
 const MAX_WEEK_OFFSET = 2;
 
 function parseWeekOffset(raw: string | string[] | undefined): number {
   const v = Array.isArray(raw) ? raw[0] : raw;
   const n = Number(v);
-  if (!Number.isInteger(n) || n < 0 || n > MAX_WEEK_OFFSET) return 0;
+  if (!Number.isInteger(n) || n < MIN_WEEK_OFFSET || n > MAX_WEEK_OFFSET) return 0;
   return n;
 }
 
@@ -45,6 +47,7 @@ export default async function SchedulePage({
 }) {
   const user = await requireUser();
   const isManager = user.role === "MANAGER";
+  await pruneOldShifts();
   const weekOffset = parseWeekOffset((await searchParams).week);
   const tuesday = addDays(
     startOfWeek(new Date(), { weekStartsOn: 2 }),

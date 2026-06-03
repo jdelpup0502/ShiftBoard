@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
-const LABELS = ["This week", "Next week", "In 2 weeks"] as const;
+const LABELS: Record<number, string> = {
+  [-1]: "Previous week",
+  0: "This week",
+  1: "Next week",
+  2: "In 2 weeks",
+};
+const MIN_OFFSET = -1;
 const MAX_OFFSET = 2;
 
 interface Props {
@@ -12,7 +18,7 @@ interface Props {
 }
 
 export default function WeekNav({ weekOffset, weekOfLabel }: Props) {
-  const canPrev = weekOffset > 0;
+  const canPrev = weekOffset > MIN_OFFSET;
   const canNext = weekOffset < MAX_OFFSET;
   const prevHref = `/schedule?week=${weekOffset - 1}`;
   const nextHref = `/schedule?week=${weekOffset + 1}`;
@@ -29,8 +35,14 @@ export default function WeekNav({ weekOffset, weekOfLabel }: Props) {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Week of {weekOfLabel}
-          {weekOffset > 0 && (
-            <span className="ml-2 inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+          {weekOffset !== 0 && (
+            <span
+              className={`ml-2 inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${
+                weekOffset < 0
+                  ? "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                  : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+              }`}
+            >
               {LABELS[weekOffset]}
             </span>
           )}
