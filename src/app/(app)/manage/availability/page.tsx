@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireManager } from "@/lib/auth";
-import { startOfWeek, format } from "date-fns";
+import { startOfWeek, addDays, format } from "date-fns";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 
 const DAYS = [
@@ -14,7 +14,7 @@ const DAYS = [
 
 export default async function ManagerAvailabilityPage() {
   await requireManager();
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const weekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 7);
 
   const [employees, availabilityRecords] = await Promise.all([
     db.user.findMany({ where: { role: "EMPLOYEE" }, orderBy: { name: "asc" } }),
@@ -33,7 +33,7 @@ export default async function ManagerAvailabilityPage() {
         <UserGroupIcon className="w-6 h-6 text-gray-400" />
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Staff Availability</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(weekStart, "MMMM d, yyyy")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Next week — {format(weekStart, "MMMM d, yyyy")}</p>
         </div>
       </div>
 

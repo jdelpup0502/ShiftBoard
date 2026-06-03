@@ -1,14 +1,14 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { startOfWeek, format } from "date-fns";
+import { startOfWeek, addDays, format } from "date-fns";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import AvailabilityGrid from "./AvailabilityGrid";
 
 export default async function AvailabilityPage() {
   const user = await requireUser();
   if (user.role === "MANAGER") redirect("/manage/availability");
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const weekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 7);
 
   const records = await db.availability.findMany({
     where: { userId: user.id, weekStart },
@@ -24,7 +24,7 @@ export default async function AvailabilityPage() {
         <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">My Availability</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(weekStart, "MMMM d, yyyy")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Next week — {format(weekStart, "MMMM d, yyyy")}</p>
         </div>
       </div>
       <AvailabilityGrid weekStartISO={weekStart.toISOString()} initial={initial} />

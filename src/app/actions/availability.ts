@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { startOfWeek } from "date-fns";
+import { startOfWeek, addDays } from "date-fns";
 import { DayOfWeekSchema, NoteSchema, formatZodError } from "@/lib/validation";
 import { z } from "zod";
 
@@ -34,7 +34,7 @@ export async function upsertAvailability(
     }
     weekStart = d;
   } else {
-    weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+    weekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 7);
   }
 
   await db.availability.upsert({
