@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { startOfDay, subDays, addDays, format, isSameDay } from "date-fns";
+import { startOfWeek, addDays, format, isSameDay } from "date-fns";
 import type { JobTitle } from "@prisma/client";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
@@ -31,9 +31,7 @@ const ROLE_BADGE: Record<JobTitle, string> = {
 export default async function SchedulePage() {
   const user = await requireUser();
   const isManager = user.role === "MANAGER";
-  const today = startOfDay(new Date());
-  const daysSinceTue = (today.getDay() - 2 + 7) % 7;
-  const tuesday = subDays(today, daysSinceTue);
+  const tuesday = startOfWeek(new Date(), { weekStartsOn: 2 });
   const days = Array.from({ length: 6 }, (_, i) => addDays(tuesday, i));
 
   const [shifts, requirements, employees] = await Promise.all([
