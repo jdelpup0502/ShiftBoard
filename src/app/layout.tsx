@@ -46,7 +46,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-gray-100 dark:bg-gray-900">{children}</body>
     </html>
   );
 }
