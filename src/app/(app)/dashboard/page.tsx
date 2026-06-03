@@ -83,7 +83,7 @@ export default async function DashboardPage() {
           {nextShift ? (
             <>
               <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatTime(nextShift.startTime)}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><NextShiftLabel dateISO={nextShift.date.toISOString()} /></div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><NextShiftLabel dateStr={format(nextShift.date, "yyyy-MM-dd")} /></div>
             </>
           ) : (
             <>
