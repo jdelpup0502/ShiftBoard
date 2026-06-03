@@ -7,13 +7,6 @@ const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter } as any);
 
 async function main() {
-  // Only seed if the database is empty — safe to run repeatedly in CI/deploy pipelines
-  const userCount = await prisma.user.count();
-  if (userCount > 0) {
-    console.log("Database already seeded — skipping.");
-    return;
-  }
-
   const adminEmail = process.env.SEED_ADMIN_EMAIL;
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 
@@ -27,17 +20,29 @@ async function main() {
     throw new Error("SEED_ADMIN_PASSWORD must be at least 12 characters.");
   }
 
-  const passwordHash = bcrypt.hashSync(adminPassword, 12);
+  const userCount = await prisma.user.count();
+  if (userCount === 0) {
+    const passwordHash = bcrypt.hashSync(adminPassword, 12);
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        passwordHash,
+        name: "Admin",
+        role: Role.EMPLOYEE,
+        isAdmin: true,
+      },
+    });
+    console.log(`✓ Seeded database with admin account: ${adminEmail}`);
+  } else {
+    console.log("Database already seeded — skipping user creation.");
+  }
 
-  await prisma.user.create({
-    data: {
-      email: adminEmail,
-      passwordHash,
-      name: "Admin",
-      role: Role.EMPLOYEE,
-      isAdmin: true,
-    },
+  // Always ensure the admin email has isAdmin=true
+  await prisma.user.updateMany({
+    where: { email: adminEmail },
+    data: { isAdmin: true },
   });
+  console.log(`✓ Ensured isAdmin=true for ${adminEmail}`);
 
   // Default staffing requirements — all zeros, ready to configure
   for (let day = 0; day < 7; day++) {
@@ -49,8 +54,6 @@ async function main() {
       });
     }
   }
-
-  console.log(`✓ Seeded database with admin account: ${adminEmail}`);
 }
 
 main()
