@@ -5,6 +5,16 @@ import type { JobTitle } from "@prisma/client";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import ScheduleCell from "./ScheduleCell";
 import ScheduleHeader from "./ScheduleHeader";
+import WeekNav from "./WeekNav";
+
+const MAX_WEEK_OFFSET = 2;
+
+function parseWeekOffset(raw: string | string[] | undefined): number {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  const n = Number(v);
+  if (!Number.isInteger(n) || n < 0 || n > MAX_WEEK_OFFSET) return 0;
+  return n;
+}
 
 const JOB_TITLES: JobTitle[] = ["SERVER", "HOST", "BUSSER", "BARTENDER"];
 const JOB_LABEL: Record<JobTitle, string> = {
@@ -28,11 +38,20 @@ const ROLE_BADGE: Record<JobTitle, string> = {
   BARTENDER: "bg-purple-600 text-white",
 };
 
-export default async function SchedulePage() {
+export default async function SchedulePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string | string[] }>;
+}) {
   const user = await requireUser();
   const isManager = user.role === "MANAGER";
-  const tuesday = startOfWeek(new Date(), { weekStartsOn: 2 });
+  const weekOffset = parseWeekOffset((await searchParams).week);
+  const tuesday = addDays(
+    startOfWeek(new Date(), { weekStartsOn: 2 }),
+    weekOffset * 7,
+  );
   const days = Array.from({ length: 6 }, (_, i) => addDays(tuesday, i));
+  const weekOfLabel = format(addDays(tuesday, -1), "MMMM d, yyyy");
 
   const [shifts, requirements, employees] = await Promise.all([
     db.shift.findMany({
@@ -58,10 +77,7 @@ export default async function SchedulePage() {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Schedule</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Week of {format(addDays(tuesday, -1), "MMMM d, yyyy")}</p>
-        </div>
+        <WeekNav weekOffset={weekOffset} weekOfLabel={weekOfLabel} />
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
