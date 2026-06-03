@@ -5,12 +5,12 @@ import { upsertAvailability } from "@/app/actions/availability";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
 const DAYS = [
-  { label: "Sunday", dow: 0 },
   { label: "Tuesday", dow: 2 },
   { label: "Wednesday", dow: 3 },
   { label: "Thursday", dow: 4 },
   { label: "Friday", dow: 5 },
   { label: "Saturday", dow: 6 },
+  { label: "Sunday", dow: 0 },
 ];
 
 interface DayState {
