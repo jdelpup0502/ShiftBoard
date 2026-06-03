@@ -32,8 +32,8 @@ export default function NextShiftCard({ shifts }: { shifts: ShiftInfo[] }) {
   if (index === -1) {
     return (
       <>
-        <div className="text-lg font-bold text-gray-400">—</div>
-        <div className="text-sm text-gray-400 mt-0.5">None coming up</div>
+        <div className="display text-[44px] md:text-[52px] text-ink-faint mt-2 leading-none">—</div>
+        <div className="text-[12px] text-ink-muted mt-2">None coming up</div>
       </>
     );
   }
@@ -49,8 +49,10 @@ export default function NextShiftCard({ shifts }: { shifts: ShiftInfo[] }) {
 
   return (
     <>
-      <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatTime(shift.startTime)}</div>
-      <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{label}</div>
+      <div className="font-mono tnum text-[40px] md:text-[48px] text-ink mt-2 leading-none font-medium tracking-tight">
+        {formatTime(shift.startTime)}
+      </div>
+      <div className="text-[12px] text-ink-muted mt-2">{label}</div>
     </>
   );
 }

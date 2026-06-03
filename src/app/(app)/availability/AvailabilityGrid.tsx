@@ -56,66 +56,66 @@ export default function AvailabilityGrid({ weekStartISO, initial }: Props) {
   }
 
   return (
-    <div className="space-y-3">
-      {DAYS.map(({ label, dow }) => {
-        const { available, note } = days[dow];
-        return (
-          <div
-            key={dow}
-            className={`rounded-xl border px-4 py-3 md:px-5 md:py-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-colors ${
-              available
-                ? "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-            }`}
-          >
-            <div className="flex items-center gap-3 sm:gap-4 sm:min-w-[180px]">
-              <button
-                type="button"
-                onClick={() => toggle(dow)}
-                aria-label={available ? `${label} available, tap to mark unavailable` : `${label} unavailable, tap to mark available`}
-                className={`w-12 h-7 rounded-full transition-colors relative flex-shrink-0 ${
-                  available ? "bg-emerald-500" : "bg-red-400"
-                }`}
-              >
-                <span
-                  className={`absolute top-[2px] left-[2px] w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                    available ? "translate-x-5" : "translate-x-0"
+    <div>
+      <div className="divide-y divide-line-soft border border-line rounded-xl bg-surface overflow-hidden">
+        {DAYS.map(({ label, dow }) => {
+          const { available, note } = days[dow];
+          return (
+            <div
+              key={dow}
+              className={`px-4 py-3.5 md:px-5 md:py-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-colors ${
+                available ? "" : "bg-red-50/40 dark:bg-red-950/15"
+              }`}
+            >
+              <div className="flex items-center gap-3 sm:gap-4 sm:min-w-[200px]">
+                <button
+                  type="button"
+                  onClick={() => toggle(dow)}
+                  aria-label={available ? `${label} available, tap to mark unavailable` : `${label} unavailable, tap to mark available`}
+                  className={`w-12 h-7 rounded-full transition-colors relative flex-shrink-0 ${
+                    available ? "bg-emerald-500" : "bg-red-400"
                   }`}
-                />
-              </button>
-              <span className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex-1 sm:flex-none sm:w-24">{label}</span>
-              <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                  available
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
-                    : "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
-                }`}
-              >
-                {available ? "Available" : "Unavailable"}
-              </span>
+                >
+                  <span
+                    className={`absolute top-[2px] left-[2px] w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                      available ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+                <span className="font-semibold text-[14px] text-ink flex-1 sm:flex-none sm:w-24">{label}</span>
+                <span
+                  className={`text-[10px] font-semibold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-sm shrink-0 ${
+                    available
+                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                      : "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300"
+                  }`}
+                >
+                  {available ? "On" : "Off"}
+                </span>
+              </div>
+              <input
+                type="text"
+                placeholder="Add a note (optional)"
+                value={note}
+                onChange={(e) => setNote(dow, e.target.value)}
+                className="w-full sm:flex-1 border border-line rounded-md px-3 py-2.5 md:py-2 text-base md:text-sm text-ink bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent-edge placeholder:text-ink-faint"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Note (optional)"
-              value={note}
-              onChange={(e) => setNote(dow, e.target.value)}
-              className="w-full sm:flex-1 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 md:py-1.5 text-base md:text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-            />
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-3 pt-5">
         <button
           onClick={handleSave}
           disabled={pending}
-          className="w-full sm:w-auto bg-indigo-600 text-white rounded-lg px-6 py-2.5 sm:py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+          className="w-full sm:w-auto bg-accent text-accent-fg rounded-md px-6 py-2.5 sm:py-2 text-[13px] font-semibold uppercase tracking-[0.1em] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
         >
-          {pending ? "Saving…" : "Save Availability"}
+          {pending ? "Saving…" : "Save availability"}
         </button>
         {saved && (
-          <span className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-            <CheckIcon className="w-4 h-4" /> Saved!
+          <span className="flex items-center gap-1.5 text-[13px] text-emerald-600 dark:text-emerald-400 font-semibold">
+            <CheckIcon className="w-4 h-4" /> Saved
           </span>
         )}
       </div>

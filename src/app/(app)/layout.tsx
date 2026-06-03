@@ -5,9 +5,9 @@ import MobileTabBar from "@/components/MobileTabBar";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-paper">
       <Nav user={user} />
-      <main className="max-w-7xl mx-auto px-4 py-4 pb-24 md:px-6 md:py-8 md:pb-8">
+      <main className="max-w-7xl mx-auto px-4 py-5 pb-24 md:px-8 md:py-10 md:pb-12">
         {children}
       </main>
       <MobileTabBar user={user} />

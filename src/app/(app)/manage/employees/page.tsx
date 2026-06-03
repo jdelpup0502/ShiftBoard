@@ -3,7 +3,6 @@ import { requireManager } from "@/lib/auth";
 import EmployeeRow from "./EmployeeRow";
 import AddEmployeeForm from "./AddEmployeeForm";
 import type { JobTitle } from "@prisma/client";
-import { UserGroupIcon } from "@heroicons/react/24/outline";
 
 const JOB_TITLES: JobTitle[] = ["SERVER", "HOST", "BUSSER", "BARTENDER"];
 
@@ -16,23 +15,22 @@ export default async function EmployeesPage() {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <UserGroupIcon className="w-6 h-6 text-gray-400" />
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Employees</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{users.length} team member{users.length !== 1 ? "s" : ""}</p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8 md:mb-10">
+        <div>
+          <h1 className="display text-[34px] md:text-[44px] text-ink leading-none">Employees</h1>
+          <p className="text-[13px] text-ink-muted mt-3 flex items-center gap-2">
+            <span className="font-mono tnum">{users.length.toString().padStart(2, "0")}</span>
+            <span>team member{users.length !== 1 ? "s" : ""}</span>
+          </p>
         </div>
         <AddEmployeeForm />
       </div>
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="bg-surface border border-line rounded-xl divide-y divide-line-soft overflow-hidden">
         {users.length === 0 ? (
-          <div className="p-10 text-center text-gray-400">
-            <UserGroupIcon className="w-10 h-10 mx-auto mb-3 text-gray-200 dark:text-gray-600" />
-            <p className="font-medium">No employees yet.</p>
-            <p className="text-sm mt-1">Click &quot;Add Employee&quot; to get started.</p>
+          <div className="p-12 text-center">
+            <p className="text-[15px] font-semibold text-ink-soft">No employees yet.</p>
+            <p className="text-[13px] text-ink-faint mt-2">Click &quot;Add employee&quot; to get started.</p>
           </div>
         ) : (
           users.map((user) => (

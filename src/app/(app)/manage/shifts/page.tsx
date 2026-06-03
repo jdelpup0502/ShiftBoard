@@ -3,7 +3,6 @@ import { requireManager } from "@/lib/auth";
 import CreateShiftForm from "./CreateShiftForm";
 import ShiftManagerRow from "./ShiftManagerRow";
 import type { JobTitle } from "@prisma/client";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 export default async function ManageShiftsPage() {
   await requireManager();
@@ -32,24 +31,21 @@ export default async function ManageShiftsPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center gap-3 mb-6">
-        <Cog6ToothIcon className="w-6 h-6 text-gray-400" />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Shifts</h1>
-          <p className="text-sm text-gray-500">Create shifts, assign employees, and manage training.</p>
-        </div>
+      <div className="mb-8 md:mb-10">
+        <h1 className="display text-[34px] md:text-[44px] text-ink leading-none">Manage shifts</h1>
+        <p className="text-[13px] text-ink-muted mt-3">Create shifts, assign employees, and manage training.</p>
       </div>
 
       <CreateShiftForm employees={employeeOptions} />
 
-      <div className="mt-8">
-        <h2 className="text-base font-bold text-gray-900 mb-3">Upcoming Shifts</h2>
+      <div className="mt-10">
+        <h2 className="text-[18px] font-semibold tracking-tight text-ink mb-4">Upcoming shifts</h2>
         {shifts.length === 0 ? (
-          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-            No upcoming shifts. Create one above.
+          <div className="border border-dashed border-line rounded-xl p-10 text-center bg-sunken/40">
+            <p className="text-[13px] text-ink-faint italic">No upcoming shifts. Create one above.</p>
           </div>
         ) : (
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm divide-y divide-gray-200">
+          <div className="bg-surface border border-line rounded-xl divide-y divide-line-soft overflow-hidden">
             {shifts.map((shift) => (
               <ShiftManagerRow
                 key={shift.id}

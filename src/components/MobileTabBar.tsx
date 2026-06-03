@@ -39,7 +39,6 @@ export default function MobileTabBar({ user }: { user: User }) {
     { href: "/marketplace", label: "Market", icon: ShoppingBagIcon },
   ];
 
-  // Managers don't have a personal /availability page; show Account instead
   if (user.role === "MANAGER") {
     primary.push({ href: "/account", label: "Account", icon: UserCircleIcon });
   } else {
@@ -69,7 +68,7 @@ export default function MobileTabBar({ user }: { user: User }) {
   return (
     <>
       <nav
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-line"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-stretch justify-around h-16">
@@ -79,24 +78,25 @@ export default function MobileTabBar({ user }: { user: User }) {
               <Link
                 key={href}
                 href={href}
-                className={`flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] ${
-                  active
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-500 dark:text-gray-400"
+                className={`relative flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] ${
+                  active ? "text-accent" : "text-ink-muted"
                 }`}
               >
-                <Icon className="w-6 h-6" />
-                <span className="text-[11px] font-medium leading-none">{label}</span>
+                {active && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-accent rounded-full" />
+                )}
+                <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2 : 1.6} />
+                <span className="text-[10.5px] font-medium leading-none tracking-tight">{label}</span>
               </Link>
             );
           })}
           <button
             type="button"
             onClick={() => setMoreOpen(true)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] text-gray-500 dark:text-gray-400"
+            className="flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] text-ink-muted"
           >
-            <Bars3Icon className="w-6 h-6" />
-            <span className="text-[11px] font-medium leading-none">More</span>
+            <Bars3Icon className="w-[22px] h-[22px]" strokeWidth={1.6} />
+            <span className="text-[10.5px] font-medium leading-none tracking-tight">More</span>
           </button>
         </div>
       </nav>
@@ -106,24 +106,24 @@ export default function MobileTabBar({ user }: { user: User }) {
           <button
             type="button"
             aria-label="Close menu"
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
             onClick={() => setMoreOpen(false)}
           />
           <div
-            className="relative bg-white dark:bg-gray-900 rounded-t-2xl border-t border-gray-200 dark:border-gray-800 shadow-2xl"
+            className="relative bg-surface rounded-t-2xl border-t border-line shadow-[0_-12px_30px_-12px_oklch(0_0_0/0.25)]"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-line-soft">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase shrink-0">
+                <div className="w-10 h-10 rounded-full bg-accent-soft border border-accent-edge flex items-center justify-center text-sm font-semibold text-accent uppercase shrink-0">
                   {user.name[0]}
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+                  <div className="text-sm font-semibold text-ink leading-tight">
                     {user.name}
                   </div>
                   {isManagerLike && (
-                    <div className="text-xs text-gray-400 dark:text-gray-500">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-ink-muted mt-0.5">
                       {user.isAdmin ? "Admin" : "Manager"}
                     </div>
                   )}
@@ -133,7 +133,7 @@ export default function MobileTabBar({ user }: { user: User }) {
                 type="button"
                 aria-label="Close menu"
                 onClick={() => setMoreOpen(false)}
-                className="p-2.5 -mr-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200"
+                className="p-2.5 -mr-1 text-ink-muted hover:text-ink"
               >
                 <XMarkIcon className="w-6 h-6" />
               </button>
@@ -147,10 +147,10 @@ export default function MobileTabBar({ user }: { user: User }) {
                     key={href}
                     href={href}
                     onClick={() => setMoreOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-base ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-[15px] ${
                       active
-                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        ? "bg-accent-soft text-accent font-semibold"
+                        : "text-ink hover:bg-sunken"
                     }`}
                   >
                     <Icon className="w-5 h-5 shrink-0" />
@@ -160,15 +160,15 @@ export default function MobileTabBar({ user }: { user: User }) {
               })}
             </div>
 
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-line-soft">
+              <div className="flex items-center gap-2 text-sm text-ink-muted">
                 <ThemeToggle />
                 <span>Theme</span>
               </div>
               <form action={logout}>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-ink bg-sunken hover:bg-line-soft"
                 >
                   <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
                   Sign out

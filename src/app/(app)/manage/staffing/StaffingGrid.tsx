@@ -12,11 +12,18 @@ const JOB_LABEL: Record<JobTitle, string> = {
   BARTENDER: "Bartender",
 };
 
-const JOB_COLOR: Record<JobTitle, string> = {
-  SERVER: "text-blue-800 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30",
-  HOST: "text-emerald-800 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-900/30",
-  BUSSER: "text-amber-800 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/30",
-  BARTENDER: "text-purple-800 bg-purple-100 dark:text-purple-300 dark:bg-purple-900/30",
+const ROLE_DOT: Record<JobTitle, string> = {
+  SERVER: "bg-sky-500",
+  HOST: "bg-emerald-500",
+  BUSSER: "bg-amber-500",
+  BARTENDER: "bg-violet-500",
+};
+
+const ROLE_INK: Record<JobTitle, string> = {
+  SERVER: "text-sky-700 dark:text-sky-300",
+  HOST: "text-emerald-700 dark:text-emerald-300",
+  BUSSER: "text-amber-700 dark:text-amber-400",
+  BARTENDER: "text-violet-700 dark:text-violet-300",
 };
 
 interface Day {
@@ -54,20 +61,20 @@ export default function StaffingGrid({ days, jobTitles, initialGrid }: Props) {
   }
 
   const inputClass =
-    "w-full text-center border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-2.5 md:py-1.5 text-base md:text-sm bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors font-semibold text-gray-900 dark:text-gray-100";
+    "w-full text-center border border-line rounded-md px-2 py-2.5 md:py-1.5 text-base md:text-sm bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/35 focus:border-accent-edge transition-colors font-mono tnum font-semibold text-ink";
 
   return (
     <div>
       {/* Desktop: table */}
-      <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-line bg-surface">
         <table className="border-collapse text-sm w-full">
           <thead>
-            <tr className="border-b border-gray-100 dark:border-gray-700">
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 w-32">
+            <tr className="border-b border-line">
+              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted bg-sunken w-36">
                 Role
               </th>
               {days.map((d) => (
-                <th key={d.dow} className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 min-w-[72px]">
+                <th key={d.dow} className="px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted bg-sunken min-w-[72px]">
                   {d.label}
                 </th>
               ))}
@@ -75,9 +82,12 @@ export default function StaffingGrid({ days, jobTitles, initialGrid }: Props) {
           </thead>
           <tbody>
             {jobTitles.map((role, ri) => (
-              <tr key={role} className={ri < jobTitles.length - 1 ? "border-b border-gray-200 dark:border-gray-700" : ""}>
-                <td className={`px-4 py-3 font-semibold text-sm ${JOB_COLOR[role]}`}>
-                  {JOB_LABEL[role]}
+              <tr key={role} className={ri < jobTitles.length - 1 ? "border-b border-line-soft" : ""}>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${ROLE_DOT[role]}`} />
+                    <span className={`text-[13px] font-semibold ${ROLE_INK[role]}`}>{JOB_LABEL[role]}</span>
+                  </div>
                 </td>
                 {days.map(({ dow }) => (
                   <td key={dow} className="px-2 py-2 text-center">
@@ -87,7 +97,7 @@ export default function StaffingGrid({ days, jobTitles, initialGrid }: Props) {
                       max={20}
                       value={grid[`${dow}-${role}`] ?? 0}
                       onChange={(e) => handleChange(dow, role, e.target.value)}
-                      className="w-14 text-center border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors font-semibold text-gray-900 dark:text-gray-100"
+                      className="w-14 text-center border border-line rounded-md px-2 py-1.5 text-sm bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/35 focus:border-accent-edge transition-colors font-mono tnum font-semibold text-ink"
                     />
                   </td>
                 ))}
@@ -100,14 +110,15 @@ export default function StaffingGrid({ days, jobTitles, initialGrid }: Props) {
       {/* Mobile: per-role cards */}
       <div className="md:hidden space-y-3">
         {jobTitles.map((role) => (
-          <div key={role} className="rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 overflow-hidden">
-            <div className={`px-3 py-2 font-semibold text-sm ${JOB_COLOR[role]}`}>
-              {JOB_LABEL[role]}
+          <div key={role} className="rounded-xl border border-line bg-surface overflow-hidden">
+            <div className="px-3.5 py-2.5 border-b border-line-soft flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${ROLE_DOT[role]}`} />
+              <span className={`text-[13px] font-semibold ${ROLE_INK[role]}`}>{JOB_LABEL[role]}</span>
             </div>
             <div className="grid grid-cols-3 gap-2 p-3">
               {days.map(({ dow, label }) => (
-                <label key={dow} className="flex flex-col items-center gap-1">
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                <label key={dow} className="flex flex-col items-center gap-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted">
                     {label}
                   </span>
                   <input
@@ -125,17 +136,17 @@ export default function StaffingGrid({ days, jobTitles, initialGrid }: Props) {
         ))}
       </div>
 
-      <div className="mt-4 flex items-center gap-3">
+      <div className="mt-5 flex items-center gap-3">
         <button
           onClick={handleSave}
           disabled={pending}
-          className="w-full sm:w-auto bg-indigo-600 text-white rounded-lg px-5 py-2.5 sm:py-2 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+          className="w-full sm:w-auto bg-accent text-accent-fg rounded-md px-5 py-2.5 sm:py-2 text-[13px] font-semibold uppercase tracking-[0.1em] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
         >
-          {pending ? "Saving…" : "Save Requirements"}
+          {pending ? "Saving…" : "Save requirements"}
         </button>
         {saved && (
-          <span className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-            <CheckIcon className="w-4 h-4" /> Saved!
+          <span className="flex items-center gap-1.5 text-[13px] text-emerald-600 dark:text-emerald-400 font-semibold">
+            <CheckIcon className="w-4 h-4" /> Saved
           </span>
         )}
       </div>

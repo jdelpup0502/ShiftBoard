@@ -14,11 +14,11 @@ const JOB_LABEL: Record<JobTitle, string> = {
   BARTENDER: "Bartender",
 };
 
-const JOB_COLOR: Record<JobTitle, string> = {
-  SERVER: "bg-blue-100 text-blue-700",
-  HOST: "bg-emerald-100 text-emerald-700",
-  BUSSER: "bg-amber-100 text-amber-700",
-  BARTENDER: "bg-purple-100 text-purple-700",
+const ROLE_TAG: Record<JobTitle, string> = {
+  SERVER: "bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300",
+  HOST: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  BUSSER: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+  BARTENDER: "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
 };
 
 interface ShiftData {
@@ -69,33 +69,30 @@ export default function ShiftManagerRow({ shift, employees }: Props) {
   }
 
   return (
-    <div className={`px-5 py-3.5 flex items-center gap-4 flex-wrap transition-opacity ${pending ? "opacity-50" : ""}`}>
-      {/* Date */}
+    <div className={`px-5 py-4 flex items-center gap-4 flex-wrap transition-opacity ${pending ? "opacity-50" : ""}`}>
       <div className="min-w-[110px]">
-        <div className="text-sm font-semibold text-gray-900">{format(new Date(shift.date), "EEE, MMM d")}</div>
-        <div className="text-xs text-gray-400">{formatTime(shift.startTime)}</div>
+        <div className="text-[13px] font-semibold text-ink">{format(new Date(shift.date), "EEE, MMM d")}</div>
+        <div className="font-mono tnum text-[12px] text-ink-muted mt-0.5">{formatTime(shift.startTime)}</div>
       </div>
 
-      {/* Role badge */}
-      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-        shift.isTraining ? "bg-violet-100 text-violet-700" : JOB_COLOR[shift.jobTitle]
+      <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-sm ${
+        shift.isTraining ? "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" : ROLE_TAG[shift.jobTitle]
       }`}>
-        {JOB_LABEL[shift.jobTitle]}{shift.isTraining && " 🎓"}
+        {JOB_LABEL[shift.jobTitle]}{shift.isTraining && " · Train"}
       </span>
 
-      {/* Assign */}
       {shift.isTraining ? (
-        <div className="text-sm text-gray-600 flex items-center gap-1">
-          <span className="font-medium">{shift.assignedUserName ?? "No trainer"}</span>
-          <span className="text-gray-300">+</span>
-          <span className="text-violet-600 font-medium">{shift.traineeName ?? "No trainee"}</span>
+        <div className="text-[13px] text-ink-soft flex items-center gap-1.5">
+          <span className="font-medium text-ink">{shift.assignedUserName ?? "No trainer"}</span>
+          <span className="text-ink-faint">+</span>
+          <span className="text-violet-600 dark:text-violet-300 font-medium">{shift.traineeName ?? "No trainee"}</span>
         </div>
       ) : (
         <select
           defaultValue={shift.assignedUserId ?? ""}
           onChange={handleAssign}
           disabled={pending}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
+          className="text-[13px] border border-line rounded-md px-3 py-1.5 bg-sunken focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/35 text-ink"
         >
           <option value="">— Unassigned —</option>
           {eligibleEmployees.map((e) => (
@@ -104,19 +101,17 @@ export default function ShiftManagerRow({ shift, employees }: Props) {
         </select>
       )}
 
-      {/* Offered badge */}
       {shift.offerStatus === "OPEN" && (
-        <span className="text-xs bg-orange-50 text-orange-600 border border-orange-200 px-2.5 py-1 rounded-full font-semibold">
+        <span className="text-[10px] uppercase tracking-[0.14em] bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-900 px-1.5 py-0.5 rounded-sm font-semibold">
           Offered up
         </span>
       )}
 
-      {/* Delete */}
       <button
         onClick={handleDelete}
         disabled={pending}
         title="Delete shift"
-        className="ml-auto text-gray-300 hover:text-red-500 disabled:opacity-50 transition-colors"
+        className="ml-auto text-ink-faint hover:text-red-500 disabled:opacity-50 transition-colors"
       >
         <TrashIcon className="w-4 h-4" />
       </button>

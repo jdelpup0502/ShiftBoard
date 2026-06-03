@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { startOfWeek, addDays, format } from "date-fns";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import AvailabilityGrid from "./AvailabilityGrid";
 
 export default async function AvailabilityPage() {
@@ -20,12 +19,11 @@ export default async function AvailabilityPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center gap-3 mb-6">
-        <CalendarDaysIcon className="w-6 h-6 text-gray-400" />
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">My Availability</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Next week — {format(weekStart, "MMMM d, yyyy")}</p>
-        </div>
+      <div className="mb-8 md:mb-10">
+        <h1 className="display text-[34px] md:text-[44px] text-ink leading-none">Availability</h1>
+        <p className="text-[13px] text-ink-muted mt-3">
+          Next week — <span className="font-mono tnum text-ink-soft">{format(weekStart, "MMM d, yyyy")}</span>
+        </p>
       </div>
       <AvailabilityGrid weekStartISO={weekStart.toISOString()} initial={initial} />
     </div>
