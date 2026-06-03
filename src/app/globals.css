@@ -34,27 +34,27 @@
   --accent-ring: oklch(0.625 0.195 38 / 0.35);
 }
 
-:where(.dark) {
+html.dark {
   --paper: oklch(0.162 0.014 255);
-  --surface: oklch(0.205 0.016 255);
-  --elevated: oklch(0.235 0.017 255);
-  --line: oklch(0.31 0.014 255);
-  --line-soft: oklch(0.255 0.013 255);
-  --sunken: oklch(0.185 0.014 255);
+  --surface: oklch(0.21 0.016 255);
+  --elevated: oklch(0.245 0.017 255);
+  --line: oklch(0.33 0.014 255);
+  --line-soft: oklch(0.27 0.013 255);
+  --sunken: oklch(0.19 0.014 255);
 
   --ink: oklch(0.965 0.003 255);
   --ink-soft: oklch(0.82 0.008 255);
-  --ink-muted: oklch(0.64 0.012 255);
-  --ink-faint: oklch(0.5 0.014 255);
+  --ink-muted: oklch(0.66 0.012 255);
+  --ink-faint: oklch(0.52 0.014 255);
 
-  --accent: oklch(0.72 0.185 40);
-  --accent-hover: oklch(0.78 0.18 40);
-  --accent-active: oklch(0.66 0.185 40);
-  --accent-soft: oklch(0.32 0.08 40 / 0.45);
-  --accent-soft-hover: oklch(0.38 0.1 40 / 0.6);
+  --accent: oklch(0.74 0.18 40);
+  --accent-hover: oklch(0.8 0.17 40);
+  --accent-active: oklch(0.68 0.18 40);
+  --accent-soft: oklch(0.34 0.085 40 / 0.55);
+  --accent-soft-hover: oklch(0.4 0.105 40 / 0.65);
   --accent-fg: oklch(0.16 0.05 40);
-  --accent-edge: oklch(0.52 0.16 40);
-  --accent-ring: oklch(0.72 0.185 40 / 0.45);
+  --accent-edge: oklch(0.55 0.16 40);
+  --accent-ring: oklch(0.74 0.18 40 / 0.45);
 }
 
 /* ---------- Tailwind v4 theme bindings ---------- */

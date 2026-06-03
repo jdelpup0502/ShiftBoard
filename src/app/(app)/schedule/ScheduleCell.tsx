@@ -16,10 +16,10 @@ const ROLE_DOT: Record<JobTitle, string> = {
 };
 
 const ROLE_CHIP: Record<JobTitle, string> = {
-  SERVER: "bg-sky-50/60 border-sky-100 text-sky-800 dark:bg-sky-950/20 dark:border-sky-900/40 dark:text-sky-200",
-  HOST: "bg-emerald-50/60 border-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900/40 dark:text-emerald-200",
-  BUSSER: "bg-amber-50/60 border-amber-100 text-amber-800 dark:bg-amber-950/20 dark:border-amber-900/40 dark:text-amber-200",
-  BARTENDER: "bg-violet-50/60 border-violet-100 text-violet-800 dark:bg-violet-950/20 dark:border-violet-900/40 dark:text-violet-200",
+  SERVER: "bg-sky-50/60 border-sky-100 text-sky-800 dark:bg-sky-950/35 dark:border-sky-900/60 dark:text-sky-200",
+  HOST: "bg-emerald-50/60 border-emerald-100 text-emerald-800 dark:bg-emerald-950/35 dark:border-emerald-900/60 dark:text-emerald-200",
+  BUSSER: "bg-amber-50/60 border-amber-100 text-amber-800 dark:bg-amber-950/35 dark:border-amber-900/60 dark:text-amber-200",
+  BARTENDER: "bg-violet-50/60 border-violet-100 text-violet-800 dark:bg-violet-950/35 dark:border-violet-900/60 dark:text-violet-200",
 };
 
 interface ShiftData {
@@ -121,7 +121,7 @@ export default function ScheduleCell({
           let chipClass: string;
           let dotClass: string;
           if (s.isOffered) {
-            chipClass = "bg-orange-50/60 border-orange-100 text-orange-800 dark:bg-orange-950/20 dark:border-orange-900/40 dark:text-orange-200";
+            chipClass = "bg-orange-50/60 border-orange-100 text-orange-800 dark:bg-orange-950/35 dark:border-orange-900/60 dark:text-orange-200";
             dotClass = "bg-orange-500";
           } else if (isMe) {
             chipClass = "bg-surface border-accent-edge text-ink";
@@ -160,7 +160,7 @@ export default function ScheduleCell({
         {trainingShifts.map((s) => (
           <div
             key={s.id}
-            className="text-[11px] rounded-md border px-2 py-1.5 bg-violet-50/60 border-violet-100 text-violet-800 dark:bg-violet-950/20 dark:border-violet-900/40 dark:text-violet-200 relative group"
+            className="text-[11px] rounded-md border px-2 py-1.5 bg-violet-50/60 border-violet-100 text-violet-800 dark:bg-violet-950/35 dark:border-violet-900/60 dark:text-violet-200 relative group"
           >
             <div className="flex items-center gap-1.5 pr-4">
               <span className="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
