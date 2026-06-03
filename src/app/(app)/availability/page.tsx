@@ -7,7 +7,7 @@ import AvailabilityGrid from "./AvailabilityGrid";
 
 export default async function AvailabilityPage() {
   const user = await requireUser();
-  if (user.role === "MANAGER" || user.isAdmin) redirect("/manage/availability");
+  if (user.role === "MANAGER") redirect("/manage/availability");
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
   const records = await db.availability.findMany({

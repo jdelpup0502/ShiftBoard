@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { isSameDay } from "date-fns";
 import { addShiftSlot, deleteShift } from "@/app/actions/shifts";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import type { JobTitle } from "@prisma/client";
@@ -47,7 +48,6 @@ interface Employee {
 interface Props {
   dateISO: string;
   jobTitle: JobTitle;
-  isToday: boolean;
   required: number;
   currentUserId: string;
   isManager: boolean;
@@ -65,7 +65,6 @@ const PRESETS = [
 export default function ScheduleCell({
   dateISO,
   jobTitle,
-  isToday,
   required,
   currentUserId,
   isManager,
@@ -78,6 +77,7 @@ export default function ScheduleCell({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const isToday = isSameDay(new Date(dateISO), new Date());
   const regularShifts = shifts.filter((s) => !s.isTraining);
   const trainingShifts = shifts.filter((s) => s.isTraining);
   const assigned = regularShifts.filter((s) => s.assignedUserId).length;
