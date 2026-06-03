@@ -89,7 +89,7 @@ export default async function MarketplacePage() {
         <details className="mt-8 group">
           <summary className="text-sm text-gray-400 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none list-none flex items-center gap-1.5">
             <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
-            {ineligible.length} offer{ineligible.length !== 1 ? "s" : ""} you can&apos;t take
+            {`${ineligible.length} offer${ineligible.length !== 1 ? "s" : ""} you can’t take`}
           </summary>
           <div className="mt-3 space-y-2">
             {ineligible.map(({ offer, check }) => {
