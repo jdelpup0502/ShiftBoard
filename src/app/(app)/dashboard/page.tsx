@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { format, isToday, isTomorrow } from "date-fns";
+import { format, isToday, isTomorrow, startOfDay } from "date-fns";
 import ClientDate from "./ClientDate";
 import OfferButton from "./OfferButton";
 import CancelOfferButton from "./CancelOfferButton";
@@ -34,11 +34,11 @@ function shiftDayLabel(date: Date) {
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const now = new Date();
+  const today = startOfDay(new Date());
 
   const [myShifts, myOffers] = await Promise.all([
     db.shift.findMany({
-      where: { assignedUserId: user.id, isTraining: false, date: { gte: now } },
+      where: { assignedUserId: user.id, isTraining: false, date: { gte: today } },
       include: { offer: true },
       orderBy: { date: "asc" },
     }),
