@@ -24,11 +24,13 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - **Don't gate critical actions on `:hover`** — touch devices can't trigger it. Schedule cell delete buttons are visible by default on mobile; only fade-in on hover at `md+`.
 - The `<main>` in `(app)/layout.tsx` includes `pb-24 md:pb-8` to clear the bottom tab bar.
 - Viewport meta (`device-width, initial-scale=1, viewport-fit=cover`) is exported from `src/app/layout.tsx` so `env(safe-area-inset-bottom)` works on iOS.
+- **`<body>` carries `bg-gray-100 dark:bg-gray-900`** so iOS rubber-band overscroll matches the app shell instead of flashing white. Don't remove it without setting an equivalent on `<html>`.
 
 ### Auth & roles
 
 - Two roles: `MANAGER` and `EMPLOYEE`. `requireManager()` in `src/lib/auth.ts` allows access if `role === "MANAGER"` OR `isAdmin === true`.
-- `isAdmin` is a boolean on the User model. Admins keep `role = EMPLOYEE` for scheduling purposes but get full manager access (nav links, manage pages, audit log).
+- `isAdmin` is a boolean on the User model. Admins keep `role = EMPLOYEE` for scheduling purposes but get full manager access (manage pages).
+- **Admin-only routes** use `requireAdmin()` (also in `src/lib/auth.ts`) — currently `/manage/audit`. Nav and MobileTabBar both hide the Audit Log link unless `user.isAdmin`.
 - The seed always sets `isAdmin = true` for `SEED_ADMIN_EMAIL` on every deploy — idempotent.
 - Last-manager guard: cannot demote or delete the last MANAGER. Self-delete is blocked. Self-role-change is allowed as long as it doesn't leave zero managers.
 - Password change destroys the session and redirects to `/login`.
@@ -37,7 +39,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 
 - Closed Mondays — the schedule week runs **Tuesday through Sunday**. `startOfWeek(new Date(), { weekStartsOn: 2 })` gives the week's Tuesday. The staffing requirements grid also excludes Monday.
 - All times stored as `"HH:mm"` 24-hour strings; displayed via `formatTime()` in `src/lib/time.ts`.
-- Time input parsing lives in `ScheduleCell.tsx` (`parseTimeInput`): hours 1–11 with no AM/PM suffix are assumed PM.
+- **Availability is collected for next week**, not the current week. Both `/availability` and `/manage/availability` compute `weekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 7)` (Monday-start). The `upsertAvailability` action's fallback matches. Page headers read "Next week — [date]".
 - Managers/admins visiting `/availability` are redirected to `/manage/availability`. Admins with EMPLOYEE role can still set their own availability.
 
 ### Security
@@ -49,7 +51,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - CSP nonce generated per-request in `src/proxy.ts` (Next.js 16 proxy); forwarded via `x-nonce` header; read in `layout.tsx` via `await headers()`.
 - CSP includes `'unsafe-eval'` in `script-src` only when `NODE_ENV !== "production"` — React dev mode needs it for stack-trace reconstruction. Production CSP stays strict.
 - Security headers set in `src/proxy.ts`: CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS (production only).
-- Audit log: manager/admin actions are written to the `AuditLog` model via `src/lib/audit.ts`. Viewable at `/manage/audit`.
+- Audit log: manager/admin actions are written to the `AuditLog` model via `src/lib/audit.ts`. Viewable at `/manage/audit` (admin-only). The log is **rolling** — `writeAuditLog` prunes anything older than the 100th-newest row after each insert (`MAX_AUDIT_ROWS = 100`).
 - Startup env-var checks in `src/instrumentation.ts`.
 
 ### Running the app
