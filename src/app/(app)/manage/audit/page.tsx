@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
-import { requireManager } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 export default async function AuditPage() {
-  await requireManager();
+  await requireAdmin();
 
   const logs = await db.auditLog.findMany({
     orderBy: { createdAt: "desc" },

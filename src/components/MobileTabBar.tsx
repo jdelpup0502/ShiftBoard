@@ -55,6 +55,10 @@ export default function MobileTabBar({ user }: { user: User }) {
       { href: "/manage/staffing", label: "Staffing", icon: ClipboardDocumentListIcon },
       { href: "/manage/employees", label: "Employees", icon: UserGroupIcon },
       { href: "/manage/availability", label: "Staff Availability", icon: CheckCircleIcon },
+    );
+  }
+  if (user.isAdmin) {
+    moreLinks.push(
       { href: "/manage/audit", label: "Audit Log", icon: ClipboardDocumentListIcon },
     );
   }

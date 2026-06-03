@@ -23,6 +23,9 @@ const managerLinks = [
   { href: "/manage/staffing", label: "Staffing", icon: ClipboardDocumentListIcon },
   { href: "/manage/employees", label: "Employees", icon: UserGroupIcon },
   { href: "/manage/availability", label: "Availability", icon: CheckCircleIcon },
+];
+
+const adminLinks = [
   { href: "/manage/audit", label: "Audit Log", icon: ClipboardDocumentListIcon },
 ];
 
@@ -54,6 +57,16 @@ export default function Nav({ user }: { user: User }) {
               <>
                 <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
                 {managerLinks.map(({ href, label, icon: Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="flex items-center gap-1.5 px-3 h-14 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </Link>
+                ))}
+                {user.isAdmin && adminLinks.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
                     href={href}
