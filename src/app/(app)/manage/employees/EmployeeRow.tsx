@@ -20,7 +20,7 @@ const JOB_ACTIVE: Record<JobTitle, string> = {
 };
 
 interface Props {
-  user: { id: string; name: string; email: string; role: Role };
+  user: { id: string; name: string; username: string; role: Role };
   currentJobTitles: JobTitle[];
   allJobTitles: JobTitle[];
 }
@@ -63,7 +63,7 @@ export default function EmployeeRow({ user, currentJobTitles, allJobTitles }: Pr
         </div>
         <div className="min-w-0 flex-1">
           <div className="font-semibold text-[14px] text-ink truncate">{user.name}</div>
-          <div className="text-[12px] text-ink-muted truncate">{user.email}</div>
+          <div className="text-[12px] text-ink-muted truncate">{user.username}</div>
         </div>
       </div>
 

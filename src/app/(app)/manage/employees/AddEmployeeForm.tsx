@@ -62,9 +62,9 @@ export default function AddEmployeeForm() {
               </div>
               <div>
                 <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">
-                  Email
+                  Username
                 </label>
-                <input name="email" type="email" required placeholder="jane@example.com" className={inputClass} />
+                <input name="username" type="text" required placeholder="jane_doe" className={inputClass} />
               </div>
               <div>
                 <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">

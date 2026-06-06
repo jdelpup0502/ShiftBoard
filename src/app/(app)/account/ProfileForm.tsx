@@ -5,10 +5,10 @@ import { useState, useTransition } from "react";
 
 interface Props {
   name: string;
-  email: string;
+  username: string;
 }
 
-export default function ProfileForm({ name, email }: Props) {
+export default function ProfileForm({ name, username }: Props) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -36,9 +36,9 @@ export default function ProfileForm({ name, email }: Props) {
       </div>
       <div>
         <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted mb-2">
-          Email
+          Username
         </label>
-        <input name="email" type="email" required defaultValue={email} className={inputClass} />
+        <input name="username" type="text" required defaultValue={username} className={inputClass} />
       </div>
       {error && (
         <p className="text-[13px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-md px-3 py-2">

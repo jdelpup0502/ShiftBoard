@@ -23,9 +23,9 @@ export default function AuthForm({ action, submitLabel }: Props) {
     <form action={formAction} className="space-y-4">
       <div>
         <label className="block text-[10px] font-semibold text-ink-muted uppercase tracking-[0.16em] mb-2">
-          Email
+          Username
         </label>
-        <input name="email" type="email" required placeholder="you@example.com" className={inputClass} />
+        <input name="username" type="text" required placeholder="your_username" className={inputClass} />
       </div>
       <div>
         <label className="block text-[10px] font-semibold text-ink-muted uppercase tracking-[0.16em] mb-2">

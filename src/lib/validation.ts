@@ -5,11 +5,11 @@ export const BCRYPT_COST = 12;
 export const JOB_TITLES = ["SERVER", "HOST", "BUSSER", "BARTENDER"] as const;
 export const ROLES = ["MANAGER", "EMPLOYEE"] as const;
 
-export const EmailSchema = z
+export const UsernameSchema = z
   .string()
-  .min(1, "Email is required.")
-  .max(254)
-  .email("Invalid email address.")
+  .min(3, "Username must be at least 3 characters.")
+  .max(30, "Username must be 30 characters or less.")
+  .regex(/^[a-zA-Z0-9_]+$/, "Username may only contain letters, numbers, and underscores.")
   .transform((s) => s.trim().toLowerCase());
 
 export const NameSchema = z

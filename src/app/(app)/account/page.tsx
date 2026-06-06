@@ -19,7 +19,7 @@ export default async function AccountPage() {
         </div>
         <div className="min-w-0">
           <div className="text-[17px] font-semibold text-ink truncate">{user.name}</div>
-          <div className="text-[13px] text-ink-muted truncate">{user.email}</div>
+          <div className="text-[13px] text-ink-muted truncate">{user.username}</div>
           {(user.role === "MANAGER" || user.isAdmin) && (
             <span className="mt-1.5 inline-block text-[10px] font-semibold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-sm bg-accent-soft text-accent">
               {user.isAdmin ? "Admin" : "Manager"}
@@ -32,7 +32,7 @@ export default async function AccountPage() {
       <section>
         <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-muted mb-3">Profile</h2>
         <div className="bg-surface rounded-xl border border-line p-5 md:p-6">
-          <ProfileForm name={user.name} email={user.email} />
+          <ProfileForm name={user.name} username={user.username} />
         </div>
       </section>
 

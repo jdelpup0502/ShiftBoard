@@ -10,7 +10,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   BCRYPT_COST,
-  EmailSchema,
+  UsernameSchema,
   NameSchema,
   PasswordSchema,
   RoleSchema,
@@ -20,7 +20,7 @@ import type { JobTitle, Role } from "@prisma/client";
 
 const CreateEmployeeSchema = z.object({
   name: NameSchema,
-  email: EmailSchema,
+  username: UsernameSchema,
   password: PasswordSchema,
 });
 
@@ -58,7 +58,7 @@ export async function updateRole(userId: string, role: Role) {
   });
 
   await writeAuditLog(manager.id, "UPDATE_ROLE", "User", userId, {
-    email: target.email,
+    username: target.username,
     newRole: parsed.data,
   });
 
@@ -76,20 +76,20 @@ export async function createEmployee(formData: FormData): Promise<{ error?: stri
 
   const parsed = CreateEmployeeSchema.safeParse({
     name: formData.get("name"),
-    email: formData.get("email"),
+    username: formData.get("username"),
     password: formData.get("password"),
   });
   if (!parsed.success) return { error: formatZodError(parsed.error) };
 
-  const { name, email, password } = parsed.data;
+  const { name, username, password } = parsed.data;
 
-  const exists = await db.user.findUnique({ where: { email } });
-  if (exists) return { error: "An account with that email already exists." };
+  const exists = await db.user.findUnique({ where: { username } });
+  if (exists) return { error: "An account with that username already exists." };
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
-  const user = await db.user.create({ data: { name, email, passwordHash, role: "EMPLOYEE" } });
+  const user = await db.user.create({ data: { name, username, passwordHash, role: "EMPLOYEE" } });
 
-  await writeAuditLog(manager.id, "CREATE_EMPLOYEE", "User", user.id, { email });
+  await writeAuditLog(manager.id, "CREATE_EMPLOYEE", "User", user.id, { username });
 
   revalidatePath("/manage/employees");
   return {};
@@ -100,7 +100,7 @@ export async function deleteEmployee(userId: string) {
 
   if (userId === manager.id) throw new Error("You cannot delete your own account.");
 
-  const target = await db.user.findUnique({ where: { id: userId }, select: { role: true, email: true } });
+  const target = await db.user.findUnique({ where: { id: userId }, select: { role: true, username: true } });
   if (!target) throw new Error("User not found.");
 
   if (target.role === "MANAGER") {
@@ -108,9 +108,10 @@ export async function deleteEmployee(userId: string) {
     if (managerCount <= 1) throw new Error("Cannot delete the last manager.");
   }
 
+  await db.shiftOffer.deleteMany({ where: { offeredById: userId } });
   await db.user.delete({ where: { id: userId } });
 
-  await writeAuditLog(manager.id, "DELETE_EMPLOYEE", "User", userId, { email: target.email });
+  await writeAuditLog(manager.id, "DELETE_EMPLOYEE", "User", userId, { username: target.username });
 
   revalidatePath("/manage/employees");
 }

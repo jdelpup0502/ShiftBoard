@@ -36,7 +36,7 @@ export default async function EmployeesPage() {
           users.map((user) => (
             <EmployeeRow
               key={user.id}
-              user={{ id: user.id, name: user.name, email: user.email, role: user.role }}
+              user={{ id: user.id, name: user.name, username: user.username, role: user.role }}
               currentJobTitles={user.jobTitles.map((j) => j.jobTitle)}
               allJobTitles={JOB_TITLES}
             />

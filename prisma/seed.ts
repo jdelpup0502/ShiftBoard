@@ -7,12 +7,12 @@ const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter } as any);
 
 async function main() {
-  const adminEmail = process.env.SEED_ADMIN_EMAIL;
+  const adminUsername = process.env.SEED_ADMIN_USERNAME;
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 
-  if (!adminEmail || !adminPassword) {
+  if (!adminUsername || !adminPassword) {
     throw new Error(
-      "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set when seeding an empty database.",
+      "SEED_ADMIN_USERNAME and SEED_ADMIN_PASSWORD must be set when seeding an empty database.",
     );
   }
 
@@ -25,24 +25,24 @@ async function main() {
     const passwordHash = bcrypt.hashSync(adminPassword, 12);
     await prisma.user.create({
       data: {
-        email: adminEmail,
+        username: adminUsername,
         passwordHash,
         name: "Admin",
         role: Role.EMPLOYEE,
         isAdmin: true,
       },
     });
-    console.log(`✓ Seeded database with admin account: ${adminEmail}`);
+    console.log(`✓ Seeded database with admin account: ${adminUsername}`);
   } else {
     console.log("Database already seeded — skipping user creation.");
   }
 
-  // Always ensure the admin email has isAdmin=true
+  // Always ensure the admin username has isAdmin=true
   await prisma.user.updateMany({
-    where: { email: adminEmail },
+    where: { username: adminUsername },
     data: { isAdmin: true },
   });
-  console.log(`✓ Ensured isAdmin=true for ${adminEmail}`);
+  console.log(`✓ Ensured isAdmin=true for ${adminUsername}`);
 
   // Default staffing requirements — all zeros, ready to configure
   for (let day = 0; day < 7; day++) {

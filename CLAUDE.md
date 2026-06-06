@@ -44,7 +44,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - Two roles: `MANAGER` and `EMPLOYEE`. `requireManager()` in `src/lib/auth.ts` allows access if `role === "MANAGER"` OR `isAdmin === true`.
 - `isAdmin` is a boolean on the User model. Admins keep `role = EMPLOYEE` for scheduling purposes but get full manager access (manage pages).
 - **Admin-only routes** use `requireAdmin()` (also in `src/lib/auth.ts`) — currently `/manage/audit`. Nav and MobileTabBar both hide the Audit Log link unless `user.isAdmin`.
-- The seed always sets `isAdmin = true` for `SEED_ADMIN_EMAIL` on every deploy — idempotent.
+- The seed always sets `isAdmin = true` for `SEED_ADMIN_USERNAME` on every deploy — idempotent.
 - Last-manager guard: cannot demote or delete the last MANAGER. Self-delete is blocked. Self-role-change is allowed as long as it doesn't leave zero managers.
 - Password change destroys the session and redirects to `/login`.
 
@@ -57,7 +57,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 
 ### Security
 
-- Rate limiting: `src/lib/rate-limit.ts` (in-memory sliding window). Login counts only **failed** attempts (20/hr per IP+email); correct password always succeeds. Password change: 5/hr per user. Create employee: 20/hr per manager.
+- Rate limiting: `src/lib/rate-limit.ts` (in-memory sliding window). Login counts only **failed** attempts (20/hr per IP+username); correct password always succeeds. Password change: 5/hr per user. Create employee: 20/hr per manager.
 - Zod v4 validation on all server actions (`src/lib/validation.ts`). Note: Zod v4 uses `error.issues` not `error.errors`; enum error customization uses `{ error: () => 'msg' }`.
 - bcrypt cost 12 (`BCRYPT_COST` in `src/lib/validation.ts`, re-exported from `src/lib/auth.ts`).
 - Password minimum: 12 characters (no complexity requirement).
@@ -72,7 +72,7 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 ```bash
 npx prisma migrate dev   # apply any pending migrations
 npx prisma generate      # regenerate client after schema changes
-npx prisma db seed       # seed admin account (reads SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD from .env)
+npx prisma db seed       # seed admin account (reads SEED_ADMIN_USERNAME / SEED_ADMIN_PASSWORD from .env)
 npm run dev
 ```
 

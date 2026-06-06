@@ -11,7 +11,7 @@ import { getSession } from "@/lib/session";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   BCRYPT_COST,
-  EmailSchema,
+  UsernameSchema,
   NameSchema,
   PasswordSchema,
   formatZodError,
@@ -19,7 +19,7 @@ import {
 
 const ProfileSchema = z.object({
   name: NameSchema,
-  email: EmailSchema,
+  username: UsernameSchema,
 });
 
 const PasswordChangeSchema = z.object({
@@ -35,16 +35,16 @@ export async function updateProfile(
 
   const parsed = ProfileSchema.safeParse({
     name: formData.get("name"),
-    email: formData.get("email"),
+    username: formData.get("username"),
   });
   if (!parsed.success) return { error: formatZodError(parsed.error) };
 
-  const { name, email } = parsed.data;
+  const { name, username } = parsed.data;
 
-  const conflict = await db.user.findFirst({ where: { email, NOT: { id: user.id } } });
-  if (conflict) return { error: "That email is already in use." };
+  const conflict = await db.user.findFirst({ where: { username, NOT: { id: user.id } } });
+  if (conflict) return { error: "That username is already taken." };
 
-  await db.user.update({ where: { id: user.id }, data: { name, email } });
+  await db.user.update({ where: { id: user.id }, data: { name, username } });
   revalidatePath("/account");
   revalidatePath("/dashboard");
   return { success: true };
