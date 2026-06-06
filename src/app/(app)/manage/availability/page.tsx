@@ -64,7 +64,7 @@ export default async function ManagerAvailabilityPage() {
                         ) : (
                           <>
                             <span
-                              className={`inline-block text-[11px] font-semibold w-5 h-5 rounded-full flex items-center justify-center ${
+                              className={`inline-flex text-[11px] font-semibold w-5 h-5 rounded-full items-center justify-center ${
                                 available
                                   ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
                                   : "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300"
