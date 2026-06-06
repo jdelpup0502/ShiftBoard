@@ -16,6 +16,10 @@ export async function offerShift(shiftId: string) {
   if (shift.assignedUserId !== user.id) return { error: "Not your shift." };
   if (shift.isTraining) return { error: "Training shifts cannot be offered." };
   if (shift.offer) return { error: "Shift already offered." };
+  const [h, m] = shift.startTime.split(":").map(Number);
+  const shiftStart = new Date(shift.date);
+  shiftStart.setHours(h, m, 0, 0);
+  if (shiftStart <= new Date()) return { error: "This shift has already started and cannot be offered." };
 
   await db.shiftOffer.create({
     data: { shiftId, offeredById: user.id },
@@ -88,7 +92,8 @@ export async function createShift(formData: FormData): Promise<{ error?: string 
   const isTraining = formData.get("isTraining") === "true";
   const traineeUserId = isTraining ? ((formData.get("traineeUserId") as string) || null) : null;
 
-  const date = new Date(dateStr);
+  const [cy, cm, cd] = dateStr.split("-").map(Number);
+  const date = new Date(cy, cm - 1, cd);
   if (isNaN(date.getTime())) return { error: "Invalid date." };
   if (!startTime) return { error: "Start time is required." };
 
@@ -144,7 +149,8 @@ export async function addShiftSlot(
 
   if (!startTime) return { error: "Start time is required." };
 
-  const date = new Date(dateISO);
+  const [dy, dm, dd] = dateISO.split("-").map(Number);
+  const date = new Date(dy, dm - 1, dd);
   if (isNaN(date.getTime())) return { error: "Invalid date." };
 
   if (assignedUserId) {

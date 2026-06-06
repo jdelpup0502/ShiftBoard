@@ -109,6 +109,8 @@ export async function deleteEmployee(userId: string) {
   }
 
   await db.shiftOffer.deleteMany({ where: { offeredById: userId } });
+  await db.shift.deleteMany({ where: { assignedUserId: userId } });
+  await db.shift.deleteMany({ where: { traineeUserId: userId } });
   await db.user.delete({ where: { id: userId } });
 
   await writeAuditLog(manager.id, "DELETE_EMPLOYEE", "User", userId, { username: target.username });

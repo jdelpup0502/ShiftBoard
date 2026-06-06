@@ -3,10 +3,10 @@ import { requireUser } from "@/lib/auth";
 import { format, startOfDay } from "date-fns";
 import ClientDate from "./ClientDate";
 import NextShiftCard from "./NextShiftCard";
-import OfferButton from "./OfferButton";
+import UpcomingShiftsList from "./UpcomingShiftsList";
+import UpcomingShiftStat from "./UpcomingShiftStat";
 import CancelOfferButton from "./CancelOfferButton";
 import { formatTime } from "@/lib/time";
-
 const JOB_LABEL: Record<string, string> = {
   SERVER: "Server",
   HOST: "Host",
@@ -56,51 +56,21 @@ export default async function DashboardPage() {
 
       {/* Stat row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-line rounded-xl overflow-hidden border border-line">
-        <Stat label="Upcoming" value={myShifts.length.toString()} sub="shifts scheduled" />
+        <UpcomingShiftStat shifts={myShifts.map((s) => ({ id: s.id, dateStr: format(s.date, "yyyy-MM-dd"), startTime: s.startTime, jobTitle: s.jobTitle, offerStatus: s.offer?.status ?? null }))} />
         <Stat label="Offered up" value={myOffers.length.toString()} sub="awaiting pickup" />
         <NextShiftStat shifts={nextShiftCandidates} />
       </div>
 
       {/* Upcoming shifts */}
-      <section>
-        <SectionHeading title="Upcoming shifts" count={myShifts.length} />
-        {myShifts.length === 0 ? (
-          <EmptyState text="No upcoming shifts scheduled." />
-        ) : (
-          <ul className="divide-y divide-line-soft border border-line rounded-xl bg-surface overflow-hidden">
-            {myShifts.map((shift) => {
-              const d = new Date(shift.date);
-              return (
-                <li
-                  key={shift.id}
-                  className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-4 py-4 md:px-5 md:py-4 hover:bg-sunken transition-colors"
-                >
-                  <div className="flex items-center gap-4 min-w-0">
-                    <DateBlock date={d} />
-                    <div className="w-px h-10 bg-line-soft" />
-                    <div className="min-w-0">
-                      <div className="font-mono tnum text-[15px] font-semibold text-ink">
-                        {formatTime(shift.startTime)}
-                      </div>
-                      <div className="text-[11px] uppercase tracking-[0.14em] text-ink-muted mt-0.5">
-                        {format(d, "MMM yyyy")}
-                      </div>
-                    </div>
-                    <RoleTag job={shift.jobTitle} />
-                  </div>
-                  {shift.offer?.status === "OPEN" ? (
-                    <span className="self-start md:self-auto text-[10px] uppercase tracking-[0.14em] bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 px-2 py-1 rounded-sm font-semibold">
-                      Offered up
-                    </span>
-                  ) : (
-                    <OfferButton shiftId={shift.id} />
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+      <UpcomingShiftsList
+          shifts={myShifts.map((s) => ({
+            id: s.id,
+            dateStr: format(s.date, "yyyy-MM-dd"),
+            startTime: s.startTime,
+            jobTitle: s.jobTitle,
+            offerStatus: s.offer?.status ?? null,
+          }))}
+        />
 
       {/* Offered shifts */}
       {myOffers.length > 0 && (
@@ -196,10 +166,3 @@ function RoleTag({ job }: { job: string }) {
   );
 }
 
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="border border-dashed border-line rounded-xl p-10 text-center bg-sunken/40">
-      <p className="text-[13px] text-ink-faint italic">{text}</p>
-    </div>
-  );
-}

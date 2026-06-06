@@ -4,8 +4,13 @@ import { offerShift } from "@/app/actions/shifts";
 import { useTransition } from "react";
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 
-export default function OfferButton({ shiftId }: { shiftId: string }) {
+export default function OfferButton({ shiftId, dateStr, startTime }: { shiftId: string; dateStr: string; startTime: string }) {
   const [pending, startTransition] = useTransition();
+
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const [hh, mm] = startTime.split(":").map(Number);
+  const shiftStart = new Date(y, m - 1, d, hh, mm);
+  if (shiftStart <= new Date()) return null;
 
   return (
     <button
