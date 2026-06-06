@@ -13,6 +13,8 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - **Dark-mode CSS variables must use `html.dark`, never `:where(.dark)`** — `:where()` has zero specificity, so `:root` always wins the cascade and the dark tokens silently fail to apply. The design-token block at the top of `globals.css` follows this pattern.
 - **Timezone**: Railway runs UTC. Never use `new Date()` server-side for user-visible date comparisons (today/tomorrow labels, day highlighting). Use client components for those — see `ClientDate.tsx`, `NextShiftCard.tsx`, `ScheduleHeader.tsx`.
 - **No public signup** — accounts are created by managers/admins only via `/manage/employees`.
+- **Authentication uses username, not email.** `UsernameSchema` in `src/lib/validation.ts`: 3–30 chars, `[a-zA-Z0-9_]+`, stored lowercase. The `User` model has `username String @unique` — there is no `email` field.
+- **Shift dates must be parsed as local midnight**, not UTC. Use `new Date(y, m-1, d)` (constructor form) when converting a `"yyyy-MM-dd"` string to a Date for storage. `new Date("2026-06-05")` (ISO string form) gives UTC midnight, which `isSameDay` misreads as the previous day in non-UTC timezones. See `addShiftSlot` and `createShift` in `src/app/actions/shifts.ts`.
 - **Time-input parsing** lives in `src/app/(app)/schedule/scheduleCellUtils.ts` (`parseTimeInput`, `PRESETS`) and is shared by `ScheduleCell.tsx` (desktop) and `MobileSchedule.tsx` (mobile). Hours 1–11 with no AM/PM suffix are assumed PM.
 
 ### Mobile / responsive
@@ -46,6 +48,9 @@ Restaurant scheduling platform. Next.js 16 App Router + Prisma 7 + SQLite. Deplo
 - **Admin-only routes** use `requireAdmin()` (also in `src/lib/auth.ts`) — currently `/manage/audit`. Nav and MobileTabBar both hide the Audit Log link unless `user.isAdmin`.
 - The seed always sets `isAdmin = true` for `SEED_ADMIN_USERNAME` on every deploy — idempotent.
 - Last-manager guard: cannot demote or delete the last MANAGER. Self-delete is blocked. Self-role-change is allowed as long as it doesn't leave zero managers.
+- **Deleting an employee** also deletes all their shifts and shift offers before removing the user record (avoids FK constraint errors and orphaned unassigned slots).
+- **Shift offer eligibility**: employees cannot offer a shift whose start time has already passed. Enforced server-side in `offerShift` and hidden client-side in `OfferButton`.
+- **Dashboard upcoming shifts** are filtered client-side in `UpcomingShiftsList.tsx` — past shifts from today are excluded using local time. The stat count and section heading both reflect this filtered count.
 - Password change destroys the session and redirects to `/login`.
 
 ### Restaurant rules baked into the app
@@ -96,5 +101,6 @@ npm run dev
 | Availability (employee) | `src/app/(app)/availability/` |
 | Manager tools | `src/app/(app)/manage/` |
 | Client-side date components | `ClientDate.tsx`, `NextShiftCard.tsx`, `ScheduleHeader.tsx` |
+| Dashboard shifts list + count | `UpcomingShiftsList.tsx`, `UpcomingShiftStat.tsx` |
 | Design tokens + Tailwind theme bindings | `src/app/globals.css` |
 | Font loading (Fraunces, Geist, Geist Mono) | `src/app/layout.tsx` |
