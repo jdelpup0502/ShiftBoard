@@ -14,4 +14,17 @@ export async function register() {
         "Use an absolute path like file:/data/prod.db to ensure data persists across restarts.",
     );
   }
+
+  // Enable WAL mode — persists in the DB file so all future connections use it.
+  // WAL allows concurrent reads during writes, preventing SQLITE_BUSY under load.
+  try {
+    const Database = (await import("better-sqlite3")).default;
+    const dbPath = process.env.DATABASE_URL.replace(/^file:/, "");
+    const setup = new Database(dbPath);
+    setup.pragma("journal_mode = WAL");
+    setup.pragma("busy_timeout = 5000");
+    setup.close();
+  } catch {
+    // Non-fatal — app continues without WAL if the DB isn't accessible yet
+  }
 }
