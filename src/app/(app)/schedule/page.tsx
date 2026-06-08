@@ -49,8 +49,11 @@ export default async function SchedulePage({
   const isManager = user.role === "MANAGER";
   await pruneOldShifts();
   const weekOffset = parseWeekOffset((await searchParams).week);
+  const now = new Date();
+  // On Monday (day 1) the restaurant is closed; default view advances to the upcoming Tue–Sun week.
+  const baseTuesday = startOfWeek(now, { weekStartsOn: 2 });
   const tuesday = addDays(
-    startOfWeek(new Date(), { weekStartsOn: 2 }),
+    now.getDay() === 1 ? addDays(baseTuesday, 7) : baseTuesday,
     weekOffset * 7,
   );
   const days = Array.from({ length: 6 }, (_, i) => addDays(tuesday, i));
